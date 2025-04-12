@@ -19,8 +19,7 @@ const Profile  = () => {
       <AddDataModal
         visible={modalVisible}
         onClose={() => setModalVisible(false)}
-      >
-      </AddDataModal>
+      />
     </View>
   );
 };

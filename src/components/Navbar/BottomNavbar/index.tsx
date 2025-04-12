@@ -1,5 +1,5 @@
 import {View, Pressable} from 'react-native';
-import React from 'react';
+import React, {useState} from 'react';
 import tw from 'twrnc';
 import Icon from 'react-native-vector-icons/Feather';
 import Icon2 from 'react-native-vector-icons/FontAwesome6';
@@ -8,9 +8,11 @@ import BootomNavbarTopBorderSvg from '../../../assets/svgs/BootomNavbarTopBorder
 import {useSelector} from 'react-redux';
 import {RootState} from '../../../store';
 import {colors} from '../../../constant/colors';
+import AddDataModal from '../../AddDataModal';
 const BottomNavbar = () => {
+  const [modalVisible, setModalVisible] = useState(false);
   const isDarkMode = useSelector((state: RootState) => state.ui.isDarkMode);
-  
+
   return (
     <View style={tw`${isDarkMode ? 'bg-black' : 'bg-white'}`}>
       <View style={tw`w-full`}>
@@ -25,7 +27,7 @@ const BottomNavbar = () => {
             <Icon name="bar-chart-2" size={24} color={'#969696'} />
           </Pressable>
         </View>
-        <Pressable>
+        <Pressable onPress={() => setModalVisible(true)}>
           <View
             style={[
               tw`w-16 h-16 rounded-full bg-[${colors.primary}] flex justify-center items-center -mt-10`,
@@ -43,6 +45,11 @@ const BottomNavbar = () => {
           </Pressable>
         </View>
       </View>
+      {/* Modal */}
+      <AddDataModal
+        visible={modalVisible}
+        onClose={() => setModalVisible(false)}
+      />
     </View>
   );
 };

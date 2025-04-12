@@ -83,8 +83,12 @@ const Login = () => {
       </View>
 
       <View style={tw`w-full px-6 flex gap-6 z-10`}>
+        <View>
+          <View style={tw`h-16 w-16 mt-20`}></View>
+        </View>
         <Input
           label="Email"
+          height={12}
           placeholder="Enter your email"
           leftIcon={<Icon name="user" color={colors.primary} size={20} />}
           iconSize={20}
@@ -96,6 +100,7 @@ const Login = () => {
         <Input
           label="Password"
           placeholder="Enter your password"
+          height={12}
           leftIcon={<Icon name="lock" color={colors.primary} size={20} />}
           rightIcon={
             <Pressable onPress={handleShowPasswordToggle}>

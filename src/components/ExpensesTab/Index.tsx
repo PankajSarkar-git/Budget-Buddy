@@ -1,4 +1,12 @@
-import {View, Text, StyleSheet, Pressable, Modal, Platform} from 'react-native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  Pressable,
+  Modal,
+  Platform,
+  KeyboardAvoidingView,
+} from 'react-native';
 import React, {useState} from 'react';
 import {colors} from '../../constant/colors';
 import Input from '../Input';
@@ -35,29 +43,20 @@ const ExpensesTab = () => {
   });
 
   const [open, setOpen] = useState<boolean>(false);
-  const [openIcon, setOpenIcon] = useState<boolean>(false);
-  const [items, setItems] = useState<DropdownItem[]>([
+  const [formattedDisplayDate, setFormattedDisplayDate] =
+    useState<string>('Select Date');
+
+  const items: DropdownItem[] = [
     {label: 'Apple', value: 'apple'},
     {label: 'Banana', value: 'banana'},
-  ]);
+  ];
 
   const [showDatePicker, setShowDatePicker] = useState<boolean>(false);
 
   const handleSave = () => {
-    console.log(
-      'logggggggggggg',
-      formData.date.toLocaleDateString('en-GB', {
-        day: '2-digit',
-        month: 'short',
-        year: 'numeric',
-      }),
-    );
+    console.log('logggggggggggg', formData.date);
 
-    const formattedDate = formData.date.toLocaleDateString('en-GB', {
-      day: '2-digit',
-      month: 'short',
-      year: 'numeric',
-    });
+    const formattedDate = formData.date.toISOString();
 
     console.log('Expense Data:', {
       ...formData,
@@ -69,50 +68,50 @@ const ExpensesTab = () => {
   const dynamicBackground = isDarkMode ? colors.dark : colors.white;
   const borderColor = isDarkMode ? '#444' : colors.border;
 
-  const formattedDisplayDate = formData.date.toLocaleDateString('en-GB', {
-    day: '2-digit',
-    month: 'short',
-    year: 'numeric',
-  });
-
   return (
-    <View>
-      <View style={tw`mt-9 gap-6`}>
-        <Input
-          label="Amount"
-          placeholder="Amount"
-          height={12}
-          type="text"
-          value={formData.amount}
-          onChangeTextCustom={text =>
-            setFormData(prev => ({...prev, amount: text}))
-          }
-          labelStyle={`mb-1 text-sm font-normal text-[${dynamicText}]`}
-        />
-        <Input
-          label="Description"
-          placeholder="Description"
-          type="text"
-          value={formData.description}
-          onChangeTextCustom={text =>
-            setFormData(prev => ({...prev, description: text}))
-          }
-          labelStyle={`mb-1 text-sm font-normal text-[${dynamicText}]`}
-          height={16}
-        />
+    <KeyboardAvoidingView>
+      <View>
+        <View style={tw`mt-9 gap-6`}>
+          <Input
+            label="Amount"
+            placeholder="Amount"
+            height={12}
+            type="number"
+            value={formData.amount}
+            onChangeTextCustom={text =>
+              setFormData(prev => ({...prev, amount: text}))
+            }
+            labelStyle={`mb-1 text-sm font-normal text-[${dynamicText}]`}
+          />
+          <Input
+            label="Description"
+            placeholder="Description"
+            type="text"
+            isMultiline={true}
+            numberOfLines={5}
+            value={formData.description}
+            onChangeTextCustom={text =>
+              setFormData(prev => ({...prev, description: text}))
+            }
+            labelStyle={`mb-1 text-sm font-normal text-[${dynamicText}]`}
+            height={12}
+          />
 
-        <View style={tw`flex-row gap-4`}>
-          <View style={tw`w-[75%]`}>
+          <View style={tw`w-full`}>
             <Text
               style={[tw`mb-1 text-base font-normal`, {color: dynamicText}]}>
-              Category
+              category 
             </Text>
             <DropDownPicker
               open={open}
               value={formData.category}
               items={items}
               setOpen={setOpen}
-              setValue={(callback: any) =>
+              placeholder="Select category"
+              placeholderStyle={tw`${
+                isDarkMode ? 'text-white/70' : 'text-black/50'
+              }`}
+              setValue={callback =>
                 setFormData(prev => ({
                   ...prev,
                   category:
@@ -121,13 +120,12 @@ const ExpensesTab = () => {
                       : callback,
                 }))
               }
-              setItems={setItems}
               zIndex={3000}
               zIndexInverse={1000}
               style={[
                 styles.dropdownStyle,
                 {
-                  borderColor: borderColor,
+                  borderColor: isDarkMode ? '#fff' : borderColor,
                   backgroundColor: dynamicBackground,
                 },
               ]}
@@ -141,106 +139,68 @@ const ExpensesTab = () => {
               }}
             />
           </View>
-          <View style={tw`w-[15%]`}>
+          <View>
             <Text
               style={[tw`mb-1 text-base font-normal`, {color: dynamicText}]}>
-              Icon
+              Date
             </Text>
-            <DropDownPicker
-              open={openIcon}
-              value={formData.icon}
-              items={items}
-              setOpen={setOpenIcon}
-              setValue={(callback: any) =>
-                setFormData(prev => ({
-                  ...prev,
-                  icon:
-                    typeof callback === 'function'
-                      ? callback(prev.icon)
-                      : callback,
-                }))
-              }
-              setItems={setItems}
-              zIndex={3000}
-              zIndexInverse={1000}
-              showArrowIcon={false}
-              placeholder="icon"
+            <Pressable
+              onPress={() => setShowDatePicker(true)}
               style={[
-                styles.iconDropdownStyle,
+                tw`flex-row items-center justify-between rounded-lg px-4 py-3`,
                 {
-                  borderColor: borderColor,
+                  borderWidth: 1,
+                  borderColor: isDarkMode ? '#fff' : borderColor,
                   backgroundColor: dynamicBackground,
                 },
-              ]}
-              containerStyle={styles.dropdownContainer}
-              textStyle={[styles.dropdownText, {color: dynamicText}]}
-              labelStyle={[styles.labelStyle, {color: colors.primary}]}
-              dropDownContainerStyle={{
-                borderColor: borderColor,
-                backgroundColor: dynamicBackground,
-                maxHeight: 250,
+              ]}>
+              <Text
+                style={[
+                  tw`text-sm ${
+                    formattedDisplayDate === 'Select Date'
+                      ? isDarkMode
+                        ? 'text-white/70'
+                        : 'text-black/50'
+                      : isDarkMode
+                      ? 'text-white'
+                      : 'text-black'
+                  }`,
+                ]}>
+                {formattedDisplayDate}
+              </Text>
+              <Icon name="calendar" size={20} color={colors.primary} />
+            </Pressable>
+            <DatePicker
+              mode="date"
+              modal
+              maximumDate={new Date()}
+              date={formData.date}
+              onConfirm={(selectedDate: Date) => {
+                setFormData(prev => ({...prev, date: selectedDate}));
+                setFormattedDisplayDate(
+                  formData.date.toLocaleDateString('en-GB', {
+                    day: '2-digit',
+                    month: 'short',
+                    year: 'numeric',
+                  }),
+                );
               }}
+              open={showDatePicker}
+              onCancel={() => setShowDatePicker(false)}
+              confirmText="Save"
             />
-          </View>
-        </View>
-
-        <View>
-          <Text style={[tw`mb-1 text-base font-normal`, {color: dynamicText}]}>
-            Date
-          </Text>
-          <Pressable
-            onPress={() => setShowDatePicker(true)}
-            style={[
-              tw`flex-row items-center justify-between rounded-lg px-4 py-3`,
-              {
-                borderWidth: 1,
-                borderColor: borderColor,
-                backgroundColor: dynamicBackground,
-              },
-            ]}>
-            <Text style={{color: dynamicText, fontSize: 14}}>
-              {formattedDisplayDate}
-            </Text>
-            <Icon name="calendar" size={20} color={colors.primary} />
-          </Pressable>
-
-          {/* Date Picker Modal */}
-          <Modal
-            animationType="slide"
-            transparent={true}
-            visible={showDatePicker}
-            onRequestClose={() => setShowDatePicker(false)}>
-            <View
-              style={tw`flex-1 justify-center items-center bg-black bg-opacity-50`}>
-              <View
-                style={tw`bg-white rounded-xl p-4 w-11/12 max-w-md items-center`}>
-                <DatePicker
-                  mode="date"
-                  date={formData.date}
-                  onDateChange={(selectedDate: Date) =>
-                    setFormData(prev => ({...prev, date: selectedDate}))
-                  }
-                />
-                <Pressable
-                  style={tw`mt-4 bg-[#613AAD] px-5 py-2 rounded-full`}
-                  onPress={() => setShowDatePicker(false)}>
-                  <Text style={tw`text-white text-base`}>Done</Text>
-                </Pressable>
-              </View>
+            <View style={tw`mt-6`}>
+              <Button
+                onPress={handleSave}
+                title="Save"
+                style="bg-[#613AAD] rounded-lg w-full py-3"
+                textStyle="text-white text-center font-medium text-xl"
+              />
             </View>
-          </Modal>
-
-          <View style={tw`mt-6`}>
-            <Button
-              onPress={handleSave}
-              title="Save"
-              style="bg-[#613AAD] rounded-lg w-full py-3"
-              textStyle="text-white text-center font-medium text-xl"
-            />
           </View>
         </View>
       </View>
-    </View>
+    </KeyboardAvoidingView>
   );
 };
 
@@ -252,7 +212,7 @@ const styles = StyleSheet.create({
   },
   iconDropdownStyle: {
     borderWidth: 1,
-    borderRadius: 100,
+    borderRadius: 8,
   },
   dropdownText: {
     fontSize: 14,

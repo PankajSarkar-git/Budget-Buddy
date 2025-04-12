@@ -10,9 +10,11 @@ type InputProps = {
   leftIcon?: any;
   rightIcon?: any;
   iconSize?: number;
-  type?: 'text' | 'password';
+  type?: 'text' | 'password' | 'number';
   labelStyle?: string;
   height?: number;
+  isMultiline?: true | false;
+  numberOfLines?: number;
   onChangeTextCustom?: (value: string) => void;
 } & TextInputProps;
 
@@ -24,7 +26,9 @@ const Input = ({
   iconSize = 20,
   type = 'text',
   onChangeTextCustom,
-  height = 10,
+  height = 12,
+  isMultiline = false,
+  numberOfLines = 1,
   labelStyle = 'mb-1 text-white font-medium text-xl',
   ...rest
 }: InputProps) => {
@@ -37,29 +41,32 @@ const Input = ({
     <View style={tw`w-full`}>
       <Text style={tw`${labelStyle}`}>{label}</Text>
 
-      <View style={tw`relative`}>
+      <View style={tw`relative flex items-center`}>
         <TextInput
           placeholder={placeholder}
           placeholderTextColor="#9ca3af"
           secureTextEntry={type === 'password'}
+          keyboardType={type === 'number' ? 'number-pad' : 'default'}
           style={[
-            tw`text-base text-gray-700 border border-gray-300 rounded-lg ${
-              isDarkMode ? 'bg-black' : 'bg-white'
-            } py-2 w-full h-${height}`,
+            tw`text-base border border-gray-300 rounded-lg  ${
+              isDarkMode ? 'bg-black text-white' : 'bg-white text-gray-700'
+            } py-2 w-full min-h-${height}`,
             inputPaddingStyle,
           ]}
+          multiline={isMultiline}
+          numberOfLines={numberOfLines}
           onChangeText={onChangeTextCustom}
           {...rest}
         />
 
         {leftIcon && (
-          <View style={[tw`absolute top-2.5 left-3`]}>
+          <View style={[tw`absolute top-3 left-3`]}>
             {React.cloneElement(leftIcon, {size: iconSize})}
           </View>
         )}
 
         {rightIcon && (
-          <View style={[tw`absolute top-2.5 right-3`]}>
+          <View style={[tw`absolute top-3 right-3`]}>
             {React.cloneElement(rightIcon, {size: iconSize})}
           </View>
         )}
