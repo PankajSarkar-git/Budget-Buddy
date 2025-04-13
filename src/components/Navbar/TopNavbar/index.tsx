@@ -6,7 +6,7 @@ import {useSelector, useDispatch} from 'react-redux';
 import {RootState} from '../../../store';
 import {toggleDarkMode} from '../../../store/ui';
 import {useNavigation} from '@react-navigation/native';
-import { colors } from '../../../constant/colors';
+import {colors} from '../../../constant/colors';
 
 function TopNavbar() {
   const isDarkMode = useSelector((state: RootState) => state.ui.isDarkMode);
@@ -21,14 +21,10 @@ function TopNavbar() {
       style={tw`flex-row justify-between items-center px-7 bg-[${colors.primary}] py-6`}>
       {/* Profile Section */}
       <View
-        style={tw`w-12 h-12 rounded-full bg-green-100 flex justify-center items-center`}>
-        <Text style={tw`text-black text-sm font-normal`}>Sk</Text>
+        style={tw`w-12 h-12 rounded-full bg-white flex justify-center items-center`}>
+        <Text style={tw`text-black text-sm font-normal`}>SK</Text>
       </View>
-      <TouchableOpacity
-        onPress={goToProfile}
-        style={tw`bg-green-600 px-6 py-3 rounded-lg`}>
-        <Text style={tw`text-white text-base`}>Go to Profile</Text>
-      </TouchableOpacity>
+
       {/* Icons Section */}
       <View style={tw`flex flex-row gap-4`}>
         <TouchableOpacity onPress={() => dispatch(toggleDarkMode())}>

@@ -3,6 +3,8 @@ import {View, Text, TextInput, TextInputProps} from 'react-native';
 import {useSelector} from 'react-redux';
 import tw from 'twrnc';
 import {RootState} from '../../store';
+import {textStyle} from '../../constant/textStyle';
+import {colors} from '../../constant/colors';
 
 type InputProps = {
   label: string;
@@ -48,10 +50,15 @@ const Input = ({
           secureTextEntry={type === 'password'}
           keyboardType={type === 'number' ? 'number-pad' : 'default'}
           style={[
-            tw`text-base border border-gray-300 rounded-lg  ${
+            tw`border  ${
+              isDarkMode
+                ? `border-[${colors.pencil}]`
+                : `border-[${colors['gray-light']}]`
+            } rounded-lg  ${
               isDarkMode ? 'bg-black text-white' : 'bg-white text-gray-700'
             } py-2 w-full min-h-${height}`,
             inputPaddingStyle,
+            textStyle.fsrobo_16_400,
           ]}
           multiline={isMultiline}
           numberOfLines={numberOfLines}

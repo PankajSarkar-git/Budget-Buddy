@@ -5,12 +5,14 @@ import TopBanner from '../../components/TopBanner';
 import BodyComponent from '../../components/Body';
 const Home = () => {
   return (
-    <ScrollView>
+    <View style={tw`flex flex-1`}>
       <View style={tw``}>
         <TopBanner />
+      </View>
+      <View style={tw`flex-1`}>
         <BodyComponent />
       </View>
-    </ScrollView>
+    </View>
   );
 };
 

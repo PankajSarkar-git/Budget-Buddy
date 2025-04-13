@@ -1,4 +1,4 @@
-import {View, Text, Pressable, ActivityIndicator} from 'react-native';
+import {View, Text, Pressable, ActivityIndicator, Image} from 'react-native';
 import React, {useState} from 'react';
 import tw from 'twrnc';
 import {useNavigation} from '@react-navigation/native';
@@ -6,8 +6,8 @@ import LoginBgIcon from '../../assets/svgs/LoginBgIcon';
 import {colors} from '../../constant/colors';
 import Input from '../../components/Input';
 import Icon from 'react-native-vector-icons/Feather';
-import Icon2 from 'react-native-vector-icons/AntDesign';
 import Button from '../../components/Button/Button';
+import {textStyle} from '../../constant/textStyle';
 
 type UserData = {
   email: string;
@@ -83,8 +83,12 @@ const Login = () => {
       </View>
 
       <View style={tw`w-full px-6 flex gap-6 z-10`}>
-        <View>
-          <View style={tw`h-16 w-16 mt-20`}></View>
+        <View style={tw`flex items-center`}>
+          {/* <View style={tw`h-16 w-16 mt-20`}></View> */}
+          <Text style={[tw`text-white mr-10`, textStyle.fsrobo_36_600]}>
+            Expense
+          </Text>
+          <Text style={[tw`text-4xl text-white ml-10`]}>Tracker</Text>
         </View>
         <Input
           label="Email"
@@ -121,9 +125,10 @@ const Login = () => {
 
         <Button
           onPress={handleLogin}
-          title={loading ? 'Logging In...' : 'Log In'}
+          title={loading ? 'Logging In...' : 'Login'}
           style="bg-black rounded-lg w-full py-3"
-          textStyle="text-white text-center font-medium text-xl"
+          textStyle={'text-white text-center'}
+          textType={textStyle.fsrobo_20_600}
           disabled={loading}
         />
 
@@ -132,14 +137,19 @@ const Login = () => {
           title="Log In With Google"
           style="bg-white rounded-lg w-full py-3"
           textStyle="text-black text-center font-medium text-xl"
-          leftIcon={<Icon2 name="google" size={20} />}
+          leftIcon={
+            <Image
+              source={require('../../assets/imgs/GoogleIcon.png')}
+              style={tw`h-4 w-4`}
+            />
+          }
           disabled={loading}
         />
 
         {loading && <ActivityIndicator color="#fff" size="small" />}
       </View>
 
-      <Text style={tw`text-base font-semibold text-center mt-36 text-white`}>
+      <Text style={tw`text-base font-semibold text-center mt-20 text-white`}>
         Terms & conditions
       </Text>
     </View>

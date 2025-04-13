@@ -39,6 +39,7 @@ import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import Login from '../screens/LogIn/Login';
 import BottomTabs from '../components/BottomTabs/BottomTabs';
 import Signup from '../screens/Signup/Signup';
+import AppRoute from './AppRoute';
 
 const Stack = createNativeStackNavigator();
 
@@ -50,7 +51,7 @@ const MainRoute = () => {
         screenOptions={{headerShown: false}}>
         <Stack.Screen name="Login" component={Login} />
         <Stack.Screen name="Signup" component={Signup} />
-        <Stack.Screen name="MainApp" component={BottomTabs} />
+        <Stack.Screen name="MainApp" component={AppRoute} />
       </Stack.Navigator>
     </NavigationContainer>
   );
