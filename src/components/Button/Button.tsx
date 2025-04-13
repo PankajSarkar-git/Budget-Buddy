@@ -10,6 +10,7 @@ type ButtonProps = {
   style?: string;
   textStyle?: string;
   disabled?: boolean;
+  textType?: any;
 };
 
 const Button: React.FC<ButtonProps> = ({
@@ -20,6 +21,7 @@ const Button: React.FC<ButtonProps> = ({
   style = 'bg-blue-500 py-3 px-4 rounded-full',
   textStyle = 'text-white text-base font-semibold',
   disabled = false,
+  textType,
 }) => {
   return (
     <TouchableOpacity
@@ -28,7 +30,7 @@ const Button: React.FC<ButtonProps> = ({
       disabled={disabled}>
       <View style={tw`flex-row items-center justify-center`}>
         {leftIcon && <View style={tw`mr-2`}>{leftIcon}</View>}
-        <Text style={tw`${textStyle}`}>{title}</Text>
+        <Text style={[tw`${textStyle}`, textType]}>{title}</Text>
         {rightIcon && <View style={tw`ml-2`}>{rightIcon}</View>}
       </View>
     </TouchableOpacity>

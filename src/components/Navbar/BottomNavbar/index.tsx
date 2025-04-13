@@ -9,15 +9,21 @@ import {useSelector} from 'react-redux';
 import {RootState} from '../../../store';
 import {colors} from '../../../constant/colors';
 import AddDataModal from '../../AddDataModal';
+import Svg, {Path} from 'react-native-svg';
+import SvgBackground from '../../SvgBackground';
 const BottomNavbar = () => {
   const [modalVisible, setModalVisible] = useState(false);
   const isDarkMode = useSelector((state: RootState) => state.ui.isDarkMode);
 
   return (
-    <View style={tw`${isDarkMode ? 'bg-black' : 'bg-white'}`}>
-      <View style={tw`w-full`}>
+    <View style={tw`${isDarkMode ? '' : ''}`}>
+      <SvgBackground
+        bgColor={isDarkMode ? 'black' : 'white'}
+        strokeColor={isDarkMode ? colors.pencil : colors['gray-light']}
+      />
+      {/* <View style={tw`w-full`}>
         <BootomNavbarTopBorderSvg />
-      </View>
+      </View> */}
       <View style={tw`px-7 py-2 flex-row justify-between mb-3`}>
         <View style={tw`flex-row gap-14 `}>
           <Pressable>
