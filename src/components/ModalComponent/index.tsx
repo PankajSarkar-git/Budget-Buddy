@@ -28,9 +28,9 @@ const ModalComponent = ({ visible, onClose, title, children }: ModalProps) => {
       animationIn="fadeInUp"
       animationOut="fadeOutDown"
       backdropOpacity={0.3}>
-      <View style={[tw`p-5 rounded-xl relative`, { backgroundColor }]}>
+      <View style={[tw`p-5 rounded-3xl relative`, { backgroundColor }]}>
         {/* Close icon */}
-        <Pressable onPress={onClose} style={tw`absolute top-3 right-3 z-10`}>
+        <Pressable onPress={onClose} style={tw`absolute top-4 right-4 z-10`}>
           <Icon name="x" size={24} color={iconColor} />
         </Pressable>
 
