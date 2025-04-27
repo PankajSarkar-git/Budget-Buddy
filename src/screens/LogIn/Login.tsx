@@ -8,6 +8,8 @@ import Input from '../../components/Input';
 import Icon from 'react-native-vector-icons/Feather';
 import Button from '../../components/Button/Button';
 import {textStyle} from '../../constant/textStyle';
+import {login} from '../../store/auth';
+import {useAppDispatch} from '../../hooks/reduxHooks';
 
 type UserData = {
   email: string;
@@ -20,7 +22,7 @@ const Login = () => {
   const [userData, setUserData] = useState<UserData>({email: '', password: ''});
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string>('');
-
+  const dispatch = useAppDispatch();
   const handleInputChange = (key: keyof UserData, value: string) => {
     setUserData(prev => ({...prev, [key]: value}));
     setError('');
@@ -48,36 +50,34 @@ const Login = () => {
     return true;
   };
 
+  const loginApiCallHandel = async () => {
+    setLoading(true);
+    try {
+      const {payload}: any = await dispatch(login(userData));
+      console.log('payload', payload);
+      if (payload?.data?.success) {
+        setError('');
+        navigation.replace('MainApp');
+      } else {
+        setError('Login failed. Please try again.');
+        setLoading(false);
+      }
+    } catch (error) {
+      console.log(error);
+      setLoading(false);
+    }
+  };
+
   const handleLogin = () => {
     if (!validate()) return;
-
-    setError('');
-    setLoading(true);
-    navigation.replace('MainApp');
-
-    // setTimeout(() => {
-    //   setLoading(false);
-
-    //   if (
-    //     userData.email.trim().toLowerCase() === 'user@example.com' &&
-    //     userData.password === 'password123'
-    //   ) {
-    //     navigation.replace('MainApp');
-    //   } else {
-    //     setError('Invalid email or password. Please try again.');
-    //   }
-    // }, 1500);
+    loginApiCallHandel();
   };
   const handleLoginWithGoogle = () => {
     navigation.replace('MainApp');
   };
 
-  const handleShowPasswordToggle = () => {
-    setShowPassword(prev => !prev);
-  };
-
   return (
-    <View style={tw`h-full justify-center items-center bg-[${colors.primary}]`}>
+    <View style={tw`h-full justify-center pt-20 bg-[${colors.primary}]`}>
       <View style={tw`absolute top-0 right-0 z-0`}>
         <LoginBgIcon />
       </View>
@@ -88,7 +88,10 @@ const Login = () => {
           <Text style={[tw`text-white mr-10`, textStyle.fsrobo_36_600]}>
             Expense
           </Text>
-          <Text style={[tw`text-4xl text-white ml-10`]}>Tracker</Text>
+          <Text
+            style={[tw`text-4xl text-white ml-10`, textStyle.fsrobo_36_600]}>
+            Tracker
+          </Text>
         </View>
         <Input
           label="Email"
@@ -97,7 +100,9 @@ const Login = () => {
           leftIcon={<Icon name="user" color={colors.primary} size={20} />}
           iconSize={20}
           type="text"
-          onChangeTextCustom={value => handleInputChange('email', value)}
+          onChangeTextCustom={value =>
+            handleInputChange('email', value.toLowerCase())
+          }
           value={userData.email}
         />
 
@@ -107,7 +112,7 @@ const Login = () => {
           height={12}
           leftIcon={<Icon name="lock" color={colors.primary} size={20} />}
           rightIcon={
-            <Pressable onPress={handleShowPasswordToggle}>
+            <Pressable onPress={() => setShowPassword(prev => !prev)}>
               <Icon
                 name={showPassword ? 'eye-off' : 'eye'}
                 color={colors.primary}
@@ -123,6 +128,17 @@ const Login = () => {
 
         {error && <Text style={tw`text-red-500`}>{error}</Text>}
 
+        <View style={tw`flex-row items-center justify-between `}>
+          <Text style={[tw`text-white`, textStyle.fsrobo_16_500]}>
+            Forgot password?
+          </Text>
+          <Pressable onPress={() => {}}>
+            <Text style={[tw`text-white`, textStyle.fsrobo_16_500]}>
+              Click here
+            </Text>
+          </Pressable>
+        </View>
+
         <Button
           onPress={handleLogin}
           title={loading ? 'Logging In...' : 'Login'}
@@ -131,6 +147,25 @@ const Login = () => {
           textType={textStyle.fsrobo_20_600}
           disabled={loading}
         />
+        <View style={tw`justify-center items-center my-5 flex-row gap-1`}>
+          <Text
+            style={[
+              tw` text-center justify-center items-center text-white`,
+              textStyle.fsrobo_16_500,
+            ]}>
+            Don’t have an account?
+          </Text>
+          <Pressable onPress={() => navigation.navigate('Signup')}>
+            <Text style={[tw`text-black underline`, textStyle.fsrobo_16_500]}>
+              Signup
+            </Text>
+          </Pressable>
+        </View>
+
+        <View style={tw`flex-row items-center justify-between`}>
+          <View style={tw`w-40 h-[1px] bg-white`}></View>
+          <View style={tw`w-40 h-[1px] bg-white`}></View>
+        </View>
 
         <Button
           onPress={handleLoginWithGoogle}

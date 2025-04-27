@@ -8,4 +8,5 @@ export const colors = {
   'gray-light': '#D9D9D9',
   'green-light': '#00A04D',
   pencil: '#686868',
+  lightBorder: '#B5B5B585',
 };

@@ -7,7 +7,7 @@ import {textStyle} from '../../constant/textStyle';
 import {colors} from '../../constant/colors';
 
 type InputProps = {
-  label: string;
+  label?: string;
   placeholder: string;
   leftIcon?: any;
   rightIcon?: any;
@@ -18,6 +18,7 @@ type InputProps = {
   isMultiline?: true | false;
   numberOfLines?: number;
   onChangeTextCustom?: (value: string) => void;
+  error?: string;
 } & TextInputProps;
 
 const Input = ({
@@ -32,6 +33,7 @@ const Input = ({
   isMultiline = false,
   numberOfLines = 1,
   labelStyle = 'mb-1 text-white font-medium text-xl',
+  error,
   ...rest
 }: InputProps) => {
   const inputPaddingStyle = {
@@ -78,6 +80,7 @@ const Input = ({
           </View>
         )}
       </View>
+      {error && <Text style={[tw`text-red-500 text-sm mt-1`]}>{error}</Text>}
     </View>
   );
 };

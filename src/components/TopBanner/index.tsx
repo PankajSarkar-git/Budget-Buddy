@@ -5,12 +5,26 @@ import LinearGradient from 'react-native-linear-gradient';
 import Icon from 'react-native-vector-icons/Feather';
 import {colors} from '../../constant/colors';
 
+import {useAppSelector} from '../../hooks/reduxHooks';
+import {useSelector} from 'react-redux';
+import {RootState} from '../../store';
+
 const TopBanner = () => {
+  const {
+    currentEarning,
+    currentExpense,
+    currentSavings,
+    currentBalance,
+    userData,
+  } = useSelector((state: RootState) => state.auth);
+  console.log(currentEarning);
+  console.log(userData);
+
   return (
     <View style={tw`px-12 bg-[${colors.primary}]`}>
       <View style={tw`pb-6`}>
         <Text style={tw`text-white text-2xl font-normal text-center`}>
-          Hii Pankaj 👋
+          Hii {userData?.name} 👋
         </Text>
       </View>
 
@@ -25,7 +39,9 @@ const TopBanner = () => {
             <Text style={tw`text-sm text-white font-medium`}>
               Current Balance
             </Text>
-            <Text style={tw`text-2xl text-white font-medium`}>₹ 2000</Text>
+            <Text style={tw`text-2xl text-white font-medium`}>
+              ₹ {new Intl.NumberFormat('en-IN').format(currentBalance)}
+            </Text>
           </View>
           <View
             style={tw` flex flex-row justify-between items-baseline mt-6 px-6 `}>
@@ -36,7 +52,9 @@ const TopBanner = () => {
               </View>
               <View style={tw`ml-2`}>
                 <Text style={tw`text-xs text-white font-normal`}>Earnings</Text>
-                <Text style={tw`text-base text-white font-medium`}>₹ 2000</Text>
+                <Text style={tw`text-base text-white font-medium`}>
+                  ₹ {new Intl.NumberFormat('en-IN').format(currentEarning)}
+                </Text>
               </View>
             </View>
             <View style={tw`flex flex-row items-center justify-center`}>
@@ -46,7 +64,9 @@ const TopBanner = () => {
               </View>
               <View style={tw`ml-2`}>
                 <Text style={tw`text-xs text-white font-normal`}>Expenses</Text>
-                <Text style={tw`text-base text-white font-medium`}>₹ 4000</Text>
+                <Text style={tw`text-base text-white font-medium`}>
+                  ₹ {new Intl.NumberFormat('en-IN').format(currentExpense)}
+                </Text>
               </View>
             </View>
           </View>

@@ -16,10 +16,7 @@ const AddDataModal = ({visible, onClose}: AddModalType) => {
 
   return (
     <View>
-      <ModalComponent
-        visible={visible}
-        onClose={onClose}
-        title="Hello Modal 👋">
+      <ModalComponent visible={visible} onClose={onClose} title=" ">
         <View style={tw`flex-row gap-3`}>
           <Pressable onPress={() => setTab('expenses')}>
             <Badge
@@ -40,8 +37,8 @@ const AddDataModal = ({visible, onClose}: AddModalType) => {
             />
           </Pressable>
         </View>
-        {tab === 'expenses' && <ExpensesTab />}
-        {tab === 'earnings' && <EarningsTab />}
+        {tab === 'expenses' && <ExpensesTab onClose={onClose} />}
+        {tab === 'earnings' && <EarningsTab onClose={onClose} />}
       </ModalComponent>
     </View>
   );

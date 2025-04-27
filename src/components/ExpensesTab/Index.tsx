@@ -6,6 +6,7 @@ import {
   Modal,
   Platform,
   KeyboardAvoidingView,
+  ScrollView,
 } from 'react-native';
 import React, {useState} from 'react';
 import {colors} from '../../constant/colors';
@@ -16,7 +17,13 @@ import Icon from 'react-native-vector-icons/Feather';
 import {useSelector} from 'react-redux';
 import {RootState} from '../../store';
 import Button from '../Button/Button';
-import DatePicker from 'react-native-date-picker';
+import {textStyle} from '../../constant/textStyle';
+import {useAppDispatch} from '../../hooks/reduxHooks';
+import DatePickerModal from '../Calendar';
+import {addExpense} from '../../store/expense';
+import {updateExpense} from '../../store/auth';
+import DropdownInput from '../DropdownInput/DropdownInput';
+import AutoCompleteInput from '../AutoCompleteInput/AutoCompleteInput';
 
 type DropdownItem = {
   label: string;
@@ -27,18 +34,16 @@ type FormData = {
   amount: string;
   description: string;
   category: string | null;
-  icon: string | null;
   date: Date;
 };
 
-const ExpensesTab = () => {
+const ExpensesTab = ({onClose}: {onClose: () => void}) => {
   const isDarkMode = useSelector((state: RootState) => state.ui.isDarkMode);
 
   const [formData, setFormData] = useState<FormData>({
     amount: '',
     description: '',
     category: null,
-    icon: null,
     date: new Date(),
   });
 
@@ -46,24 +51,89 @@ const ExpensesTab = () => {
   const [formattedDisplayDate, setFormattedDisplayDate] =
     useState<string>('Select Date');
 
-  const items: DropdownItem[] = [
-    {label: 'Apple', value: 'apple'},
-    {label: 'Banana', value: 'banana'},
+  const categories: DropdownItem[] = [
+    {label: 'Food', value: 'food'},
+    {label: 'Travel', value: 'travel'},
+    {label: 'Shopping', value: 'shopping'},
+    {label: 'Health', value: 'health'},
+    {label: 'Education', value: 'education'},
+    {label: 'Entertainment', value: 'entertainment'},
+    {label: 'Fitness', value: 'fitness'},
+    {label: 'Technology', value: 'technology'},
+    {label: 'Finance', value: 'finance'},
+    {label: 'Work', value: 'work'},
+    {label: 'Home', value: 'home'},
+    {label: 'Transport', value: 'transport'},
+    {label: 'Groceries', value: 'groceries'},
+    {label: 'Pets', value: 'pets'},
+    {label: 'Books', value: 'books'},
+    {label: 'Gifts', value: 'gifts'},
+    {label: 'Hobbies', value: 'hobbies'},
+    {label: 'Beauty', value: 'beauty'},
+    {label: 'Clothing', value: 'clothing'},
+    {label: 'Events', value: 'events'},
   ];
-
+  const [errors, setErrors] = useState<{[key: string]: string}>({});
   const [showDatePicker, setShowDatePicker] = useState<boolean>(false);
-
+  const dispatch = useAppDispatch();
+  const handelAddExpensesApiCall = async (data: any) => {
+    try {
+      const {payload}: any = await dispatch(addExpense(data));
+      console.log(payload, 'res');
+      if (payload?.data?.success) {
+        onClose();
+        setFormData({
+          amount: '',
+          description: '',
+          category: null,
+          date: new Date(),
+        });
+        const amount = payload?.data?.expense?.amount;
+        await dispatch(updateExpense(amount));
+      }
+    } catch (error) {
+      console.log(error, 'error');
+    }
+  };
   const handleSave = () => {
-    console.log('logggggggggggg', formData.date);
+    const newErrors: {[key: string]: string} = {};
+
+    if (!formData.amount.trim()) {
+      newErrors.amount = 'Amount is required';
+    } else if (isNaN(Number(formData.amount))) {
+      newErrors.amount = 'Amount must be a number';
+    }
+
+    if (!formData.description.trim()) {
+      newErrors.description = 'Description is required';
+    }
+
+    if (!formData.category) {
+      newErrors.category = 'category is required';
+    }
+
+    if (!formData.date) {
+      newErrors.date = 'Date is required';
+    }
+
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors);
+      return;
+    }
+
+    setErrors({}); // Clear previous errors
 
     const formattedDate = formData.date.toISOString();
-
     console.log('Expense Data:', {
       ...formData,
       date: formattedDate,
     });
+    handelAddExpensesApiCall({
+      ...formData,
+      date: formattedDate,
+    });
   };
-
+  const categoryLabels = categories.map(c => c.label);
   const dynamicText = isDarkMode ? colors.white : '#1e293b';
   const dynamicBackground = isDarkMode ? colors.dark : colors.white;
   const borderColor = isDarkMode ? '#444' : colors.border;
@@ -71,133 +141,115 @@ const ExpensesTab = () => {
   return (
     <KeyboardAvoidingView>
       <View>
-        <View style={tw`mt-9 gap-6`}>
-          <Input
-            label="Amount"
-            placeholder="Amount"
-            height={12}
-            type="number"
-            value={formData.amount}
-            onChangeTextCustom={text =>
-              setFormData(prev => ({...prev, amount: text}))
-            }
-            labelStyle={`mb-1 text-sm font-normal text-[${dynamicText}]`}
-          />
-          <Input
-            label="Description"
-            placeholder="Description"
-            type="text"
-            isMultiline={true}
-            numberOfLines={5}
-            value={formData.description}
-            onChangeTextCustom={text =>
-              setFormData(prev => ({...prev, description: text}))
-            }
-            labelStyle={`mb-1 text-sm font-normal text-[${dynamicText}]`}
-            height={12}
-          />
-
-          <View style={tw`w-full`}>
-            <Text
-              style={[tw`mb-1 text-base font-normal`, {color: dynamicText}]}>
-              category 
-            </Text>
-            <DropDownPicker
-              open={open}
-              value={formData.category}
-              items={items}
-              setOpen={setOpen}
-              placeholder="Select category"
-              placeholderStyle={tw`${
-                isDarkMode ? 'text-white/70' : 'text-black/50'
-              }`}
-              setValue={callback =>
-                setFormData(prev => ({
-                  ...prev,
-                  category:
-                    typeof callback === 'function'
-                      ? callback(prev.category)
-                      : callback,
-                }))
+        <ScrollView
+          nestedScrollEnabled
+          showsVerticalScrollIndicator={false}
+          style={tw`h-[440px]`}>
+          <View style={tw`mt-9 gap-6 `}>
+            <Input
+              label="Amount"
+              placeholder="Amount"
+              height={12}
+              type="number"
+              value={formData.amount}
+              onChangeTextCustom={text =>
+                setFormData(prev => ({...prev, amount: text}))
               }
-              zIndex={3000}
-              zIndexInverse={1000}
-              style={[
-                styles.dropdownStyle,
-                {
-                  borderColor: isDarkMode ? '#fff' : borderColor,
-                  backgroundColor: dynamicBackground,
-                },
-              ]}
-              containerStyle={styles.dropdownContainer}
-              textStyle={[styles.dropdownText, {color: dynamicText}]}
-              labelStyle={[styles.labelStyle, {color: colors.primary}]}
-              dropDownContainerStyle={{
-                borderColor: borderColor,
-                backgroundColor: dynamicBackground,
-                maxHeight: 250,
-              }}
+              labelStyle={`mb-1 text-sm font-normal text-[${dynamicText}]`}
+              error={errors.amount}
             />
-          </View>
-          <View>
-            <Text
-              style={[tw`mb-1 text-base font-normal`, {color: dynamicText}]}>
-              Date
-            </Text>
-            <Pressable
-              onPress={() => setShowDatePicker(true)}
-              style={[
-                tw`flex-row items-center justify-between rounded-lg px-4 py-3`,
-                {
-                  borderWidth: 1,
-                  borderColor: isDarkMode ? '#fff' : borderColor,
-                  backgroundColor: dynamicBackground,
-                },
-              ]}>
+            <Input
+              label="Description"
+              placeholder="Description"
+              type="text"
+              isMultiline={true}
+              numberOfLines={5}
+              value={formData.description}
+              onChangeTextCustom={text =>
+                setFormData(prev => ({...prev, description: text}))
+              }
+              labelStyle={`mb-1 text-sm font-normal text-[${dynamicText}]`}
+              height={12}
+              error={errors.description}
+            />
+            <View style={tw``}>
+              <AutoCompleteInput
+                placeholder="Select categories..."
+                suggestions={categoryLabels}
+                label="Category"
+                value={formData.category ? formData.category : ''}
+                onChange={value =>
+                  setFormData(prev => ({...prev, category: value}))
+                }
+              />
+              {errors.category && (
+                <Text style={[tw`text-red-500 text-sm mt-1`]}>
+                  {errors.category}
+                </Text>
+              )}
+            </View>
+            <View>
               <Text
-                style={[
-                  tw`text-sm ${
-                    formattedDisplayDate === 'Select Date'
-                      ? isDarkMode
-                        ? 'text-white/70'
-                        : 'text-black/50'
-                      : isDarkMode
-                      ? 'text-white'
-                      : 'text-black'
-                  }`,
-                ]}>
-                {formattedDisplayDate}
+                style={[tw`mb-1 text-base font-normal`, {color: dynamicText}]}>
+                Date
               </Text>
-              <Icon name="calendar" size={20} color={colors.primary} />
-            </Pressable>
-            <DatePicker
-              mode="date"
-              modal
-              maximumDate={new Date()}
-              date={formData.date}
-              onConfirm={(selectedDate: Date) => {
-                setFormData(prev => ({...prev, date: selectedDate}));
-                setFormattedDisplayDate(
-                  formData.date.toLocaleDateString('en-GB', {
-                    day: '2-digit',
-                    month: 'short',
-                    year: 'numeric',
-                  }),
-                );
-              }}
-              open={showDatePicker}
-              onCancel={() => setShowDatePicker(false)}
-              confirmText="Save"
-            />
-            <View style={tw`mt-6`}>
-              <Button
-                onPress={handleSave}
-                title="Save"
-                style="bg-[#613AAD] rounded-lg w-full py-3"
-                textStyle="text-white text-center font-medium text-xl"
+              <Pressable
+                onPress={() => setShowDatePicker(!showDatePicker)}
+                style={[
+                  tw`flex-row items-center justify-between rounded-lg px-4 py-3 mb-6`,
+                  {
+                    borderWidth: 1,
+                    borderColor: isDarkMode ? '#fff' : borderColor,
+                    backgroundColor: dynamicBackground,
+                  },
+                ]}>
+                <Text
+                  style={[
+                    tw`text-sm ${
+                      formattedDisplayDate === 'Select Date'
+                        ? isDarkMode
+                          ? 'text-white/70'
+                          : 'text-black/50'
+                        : isDarkMode
+                        ? 'text-white'
+                        : 'text-black'
+                    }`,
+                  ]}>
+                  {formattedDisplayDate}
+                </Text>
+                <Icon name="calendar" size={20} color={colors.primary} />
+              </Pressable>
+              {errors.date && (
+                <Text style={[tw`text-red-500 text-sm mt-1`]}>
+                  {errors.date}
+                </Text>
+              )}
+              <DatePickerModal
+                visible={showDatePicker}
+                onClose={() => setShowDatePicker(false)}
+                selectedDate={formData.date}
+                isDarkMode={isDarkMode}
+                onSelectDate={(date: Date) => {
+                  setFormData(prev => ({...prev, date}));
+                  setFormattedDisplayDate(
+                    date.toLocaleDateString('en-GB', {
+                      day: '2-digit',
+                      month: 'short',
+                      year: 'numeric',
+                    }),
+                  );
+                }}
               />
             </View>
           </View>
+        </ScrollView>
+        <View style={tw``}>
+          <Button
+            onPress={handleSave}
+            title="Save"
+            style="bg-[#613AAD] rounded-lg w-full py-3 mb-4"
+            textStyle="text-white text-center font-medium text-xl"
+          />
         </View>
       </View>
     </KeyboardAvoidingView>

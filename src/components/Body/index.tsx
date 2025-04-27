@@ -1,15 +1,22 @@
-import {View, Text, ScrollView} from 'react-native';
+
+
+import {View, Text, FlatList} from 'react-native';
 import React from 'react';
 import tw from 'twrnc';
-import {useSelector} from 'react-redux';
-import UpCommingBills from '../UpCommingBill';
-import MenuButton from '../MenuButton';
 import {RootState} from '../../store';
 import {colors} from '../../constant/colors';
-// import TopBarIcon from '../../assets/svgs/TopBarICon';
+import {useAppSelector} from '../../hooks/reduxHooks';
+import MenuGrid from '../MenuGrid';
+import UpCommingBillsContainer from '../UpCommingBillsContainer';
 
 const BodyComponent = () => {
-  const isDarkMode = useSelector((state: RootState) => state.ui.isDarkMode);
+  const {isDarkMode} = useAppSelector((state: RootState) => state.ui);
+
+  // Data for FlatList (no need for conditionals, just list components directly)
+  const data = [
+    {id: '1', component: <UpCommingBillsContainer />},
+    {id: '2', component: <MenuGrid />},
+  ];
 
   return (
     <View
@@ -17,39 +24,16 @@ const BodyComponent = () => {
         isDarkMode ? 'bg-black' : 'bg-white'
       }`}>
       <View style={tw`flex justify-center items-center py-3`}>
-        <View
-          style={tw`w-1/3 h-1 bg-[${colors['gray-light']}] rounded-full`}></View>
+        <View style={tw`w-1/3 h-1 bg-[${colors['gray-light']}] rounded-full`} />
       </View>
-      <ScrollView
-        contentContainerStyle={tw``}
-        style={tw``}
-        showsVerticalScrollIndicator={false}>
-        <View style={tw`flex justify-center items-center mt-3`}>
-          {/* <TopBarIcon /> */}
-        </View>
-        <View style={tw`py-3.5 px-12`}>
-          <View>
-            <Text
-              style={tw`text-sm font-normal ${
-                isDarkMode ? 'text-white' : 'text-black'
-              }`}>
-              Upcomings
-            </Text>
-          </View>
-          <View style={tw`mt-6`}>
-            <UpCommingBills />
-          </View>
-          <View style={tw`mt-7 flex flex-row justify-between gap-10 flex-wrap`}>
-            <MenuButton />
-            <MenuButton />
-            <MenuButton />
-            <MenuButton />
-            <MenuButton />
-            <MenuButton />
-            <MenuButton />
-          </View>
-        </View>
-      </ScrollView>
+
+      <FlatList
+        data={data}
+        keyExtractor={item => item.id}
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={tw`py-3.5 px-12 pb-10`}
+        renderItem={({item}) => item.component}
+      />
     </View>
   );
 };
