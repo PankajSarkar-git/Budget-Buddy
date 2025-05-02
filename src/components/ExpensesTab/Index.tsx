@@ -3,8 +3,6 @@ import {
   Text,
   StyleSheet,
   Pressable,
-  Modal,
-  Platform,
   KeyboardAvoidingView,
   ScrollView,
 } from 'react-native';
@@ -12,23 +10,17 @@ import React, {useState} from 'react';
 import {colors} from '../../constant/colors';
 import Input from '../Input';
 import tw from 'twrnc';
-import DropDownPicker from 'react-native-dropdown-picker';
 import Icon from 'react-native-vector-icons/Feather';
 import {useSelector} from 'react-redux';
 import {RootState} from '../../store';
 import Button from '../Button/Button';
-import {textStyle} from '../../constant/textStyle';
 import {useAppDispatch} from '../../hooks/reduxHooks';
 import DatePickerModal from '../Calendar';
-import {addExpense} from '../../store/expense';
-import {updateExpense} from '../../store/auth';
-import DropdownInput from '../DropdownInput/DropdownInput';
+import {addExpense, editExpense} from '../../store/expense';
+import {afterEditExpencesUpdate, updateExpense} from '../../store/auth';
 import AutoCompleteInput from '../AutoCompleteInput/AutoCompleteInput';
-
-type DropdownItem = {
-  label: string;
-  value: string;
-};
+import {AllEarning, AllExpense, DropdownItem} from '../../utils/types';
+import {formatedDate} from '../../utils/time';
 
 type FormData = {
   amount: string;
@@ -36,20 +28,39 @@ type FormData = {
   category: string | null;
   date: Date;
 };
+interface ExpensesTab {
+  onClose: () => void;
+  category?: string;
+  description?: string;
+  amount?: string;
+  date?: Date;
+  fromType?: 'Edit' | 'Add';
+  id?: string;
+  onSuccess?: (item: AllExpense | AllEarning) => void;
+}
 
-const ExpensesTab = ({onClose}: {onClose: () => void}) => {
+const ExpensesTab = ({
+  onClose,
+  fromType = 'Add',
+  amount,
+  date,
+  description,
+  category,
+  id = '',
+  onSuccess = () => {},
+}: ExpensesTab) => {
   const isDarkMode = useSelector((state: RootState) => state.ui.isDarkMode);
 
   const [formData, setFormData] = useState<FormData>({
-    amount: '',
-    description: '',
-    category: null,
-    date: new Date(),
+    amount: amount ? amount.toString() : '',
+    description: description ? description : '',
+    category: category ? category : null,
+    date: date ? new Date(date) : new Date(),
   });
 
-  const [open, setOpen] = useState<boolean>(false);
-  const [formattedDisplayDate, setFormattedDisplayDate] =
-    useState<string>('Select Date');
+  const [formattedDisplayDate, setFormattedDisplayDate] = useState<string>(
+    date ? formatedDate(formData.date) : 'Select Date',
+  );
 
   const categories: DropdownItem[] = [
     {label: 'Food', value: 'food'},
@@ -77,22 +88,59 @@ const ExpensesTab = ({onClose}: {onClose: () => void}) => {
   const [showDatePicker, setShowDatePicker] = useState<boolean>(false);
   const dispatch = useAppDispatch();
   const handelAddExpensesApiCall = async (data: any) => {
-    try {
-      const {payload}: any = await dispatch(addExpense(data));
-      console.log(payload, 'res');
-      if (payload?.data?.success) {
-        onClose();
-        setFormData({
-          amount: '',
-          description: '',
-          category: null,
-          date: new Date(),
-        });
-        const amount = payload?.data?.expense?.amount;
-        await dispatch(updateExpense(amount));
+    if (fromType === 'Add') {
+      try {
+        const {payload}: any = await dispatch(addExpense(data));
+        //(payload, 'res');
+        if (payload?.data?.success) {
+          onClose();
+          setFormData({
+            amount: '',
+            description: '',
+            category: null,
+            date: new Date(),
+          });
+          const amount = payload?.data?.expense?.amount;
+          await dispatch(updateExpense(amount));
+        }
+      } catch (error) {
+        console.log(error, 'error');
       }
-    } catch (error) {
-      console.log(error, 'error');
+    } else if (fromType === 'Edit') {
+      try {
+        console.log({data, id});
+
+        const {payload}: any = await dispatch(editExpense({data, id}));
+        console.log(payload, 'res');
+        if (payload?.data?.success) {
+          onClose();
+          setFormData({
+            amount: '',
+            description: '',
+            category: null,
+            date: new Date(),
+          });
+          const resAmount = payload?.data?.expense?.amount;
+          if (amount) {
+            if (resAmount < amount) {
+              console.log(Number(Number(amount) - resAmount));
+
+              await dispatch(
+                afterEditExpencesUpdate(Number(Number(amount) - resAmount)),
+              );
+            } else {
+              console.log(Number(resAmount - Number(amount)));
+
+              await dispatch(
+                afterEditExpencesUpdate(Number(resAmount - Number(amount))),
+              );
+            }
+          }
+          onSuccess(payload?.data?.expense as AllExpense);
+        }
+      } catch (error) {
+        console.log(error, 'error');
+      }
     }
   };
   const handleSave = () => {
@@ -124,10 +172,10 @@ const ExpensesTab = ({onClose}: {onClose: () => void}) => {
     setErrors({}); // Clear previous errors
 
     const formattedDate = formData.date.toISOString();
-    console.log('Expense Data:', {
-      ...formData,
-      date: formattedDate,
-    });
+    // console.log('Expense Data:', {
+    //   ...formData,
+    //   date: formattedDate,
+    // });
     handelAddExpensesApiCall({
       ...formData,
       date: formattedDate,

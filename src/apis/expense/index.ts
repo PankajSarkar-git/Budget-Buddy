@@ -1,4 +1,4 @@
-import {PageParams} from '../../utils/types';
+import {EditPayloadType, PageParams} from '../../utils/types';
 import api from '../api';
 import expenseApiEndpoint from './config';
 
@@ -7,8 +7,11 @@ const expenseApi = {
     const res = await api.post(expenseApiEndpoint.expense, payload);
     return res;
   },
-  async putEditExpense(id: string, payload: any) {
-    const res = await api.put(`${expenseApiEndpoint.expense}/${id}`, payload);
+  async putEditExpense(payload: EditPayloadType) {
+    const res = await api.put(
+      `${expenseApiEndpoint.expense}/${payload.id}`,
+      payload.data,
+    );
     return res;
   },
   async deleteExpense(id: string) {
@@ -17,7 +20,7 @@ const expenseApi = {
   },
   async getAllExpense(params: PageParams) {
     const res = await api.get(
-      `${expenseApiEndpoint.expense}?page=${params.page}&limit=${params.limit}`,
+      `${expenseApiEndpoint.expense}?page=${params.page}&limit=${params.limit}&category=${params.filter}&filter=${params.filterTime}`,
     );
     return res;
   },

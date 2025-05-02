@@ -11,9 +11,7 @@ const TransactionsCard = () => {
 
   return (
     <View
-      style={tw`flex-row px-5 ${
-        isDarkMode ? 'bg-black' : 'bg-white'
-      }  gap-4`}>
+      style={tw`flex-row px-5 ${isDarkMode ? 'bg-black' : 'bg-white'}  gap-4`}>
       <View style={tw`py-4`}>
         <View
           style={tw`flex justify-center items-center w-9 h-9 rounded-xl bg-white`}>

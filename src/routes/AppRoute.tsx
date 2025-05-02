@@ -9,11 +9,14 @@ import TopNavbar from '../components/Navbar/TopNavbar';
 import tw from 'twrnc';
 import Analytics from '../screens/Analytics/Analytics';
 import Transaction from '../screens/Transaction/Transaction';
-import Goal from '../screens/Goat/Goal';
+import Goal from '../screens/Goal/Goal';
 import {useRoute} from '@react-navigation/native';
 import Savings from '../screens/Savings/Savings';
 import Expenses from '../screens/Expenses/Expenses';
 import Earnings from '../screens/Earnings/Earnings';
+import TopHeader from '../components/Header/TopHeader';
+import EarningDetails from '../screens/EarningDetails/EarningDetails';
+import ExpensesDetails from '../screens/ExpensesDetails/ExpensesDetails';
 
 const Stack = createNativeStackNavigator();
 
@@ -24,6 +27,9 @@ const ScreenWithBottomNav = ({Component}: {Component: React.ComponentType}) => {
     <View style={tw`h-full`}>
       <View style={tw`flex-1`}>
         {route.name === 'Home' && <TopNavbar />}
+        {route.name !== 'Home' && route.name !== 'Transaction' && (
+          <TopHeader title={route.name} />
+        )}
         <Component />
       </View>
       <BottomNavbar />
@@ -57,6 +63,12 @@ const AppRoute = () => {
       </Stack.Screen>
       <Stack.Screen name="Earnings">
         {() => <ScreenWithBottomNav Component={Earnings} />}
+      </Stack.Screen>
+      <Stack.Screen name="Earning Details">
+        {() => <ScreenWithBottomNav Component={EarningDetails} />}
+      </Stack.Screen>
+      <Stack.Screen name="Expenses Details">
+        {() => <ScreenWithBottomNav Component={ExpensesDetails} />}
       </Stack.Screen>
     </Stack.Navigator>
   );

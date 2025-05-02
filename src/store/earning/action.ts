@@ -13,8 +13,8 @@ export const addEarning = createAsyncThunk(
 
 export const editEarning = createAsyncThunk(
   `${earningApiEndpoint.earning}Put`,
-  async (id: string, payload: any) => {
-    const {status, data} = await earningApi.putEditEarning(id, payload);
+  async (payload: any) => {
+    const {status, data} = await earningApi.putEditEarning(payload);
     return {status, data};
   },
 );

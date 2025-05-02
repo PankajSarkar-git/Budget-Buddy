@@ -105,6 +105,11 @@ export const textStyle = StyleSheet.create({
     fontSize: 20,
     fontWeight: '700',
   },
+  fsrobo_24_500: {
+    fontFamily: 'Roboto-Bold',
+    fontSize: 24,
+    fontWeight: '500',
+  },
   fsrobo_36_600: {
     fontFamily: 'Roboto-SemiBold',
     fontSize: 36,

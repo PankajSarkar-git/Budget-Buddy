@@ -6,6 +6,7 @@ import {
   earningStats,
   editEarning,
 } from './action';
+import {AllEarning, ApiResponse} from '../../utils/types';
 
 const initialState = {};
 
@@ -44,7 +45,7 @@ export const ExpenseSlice = createSlice({
       allEarning.fulfilled,
       (state: any, {payload}: {payload: any}) => {
         const {status, data} = payload;
-        console.log('Data', data);
+        // console.log('Data', data);
 
         if (status === 200 && data.success) {
           return {
@@ -59,7 +60,7 @@ export const ExpenseSlice = createSlice({
       deleteEarning.fulfilled,
       (state: any, {payload}: {payload: any}) => {
         const {status, data} = payload;
-        console.log('Data', data);
+        // console.log('Data', data);
 
         if (status === 200 && data.success) {
           return {
@@ -74,7 +75,7 @@ export const ExpenseSlice = createSlice({
       editEarning.fulfilled,
       (state: any, {payload}: {payload: any}) => {
         const {status, data} = payload;
-        console.log('Data', data);
+        // console.log('Data', data);
 
         if (status === 200 && data.success) {
           return {
@@ -88,8 +89,8 @@ export const ExpenseSlice = createSlice({
     builder.addCase(
       earningStats.fulfilled,
       (state: any, {payload}: {payload: any}) => {
-        const {status, data} = payload;
-        console.log('Data', data);
+        const {status, data}: ApiResponse<AllEarning, 'eraning'> = payload;
+        // console.log('Data', data);
 
         if (status === 200 && data.success) {
           return {

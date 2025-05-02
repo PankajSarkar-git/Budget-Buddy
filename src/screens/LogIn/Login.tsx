@@ -54,7 +54,7 @@ const Login = () => {
     setLoading(true);
     try {
       const {payload}: any = await dispatch(login(userData));
-      console.log('payload', payload);
+      //console.log('payload', payload);
       if (payload?.data?.success) {
         setError('');
         navigation.replace('MainApp');
@@ -184,7 +184,7 @@ const Login = () => {
         {loading && <ActivityIndicator color="#fff" size="small" />}
       </View>
 
-      <Text style={tw`text-base font-semibold text-center mt-20 text-white`}>
+      <Text style={tw`text-base font-semibold text-center mt-10 text-white`}>
         Terms & conditions
       </Text>
     </View>

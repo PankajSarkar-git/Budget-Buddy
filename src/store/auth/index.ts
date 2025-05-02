@@ -1,5 +1,5 @@
 import {createSlice} from '@reduxjs/toolkit';
-import {login, signUp} from './action';
+import {getUserDetails, login, signUp} from './action';
 import {AuthState} from '../../utils/types';
 
 const initialState: AuthState = {
@@ -23,13 +23,28 @@ export const AuthSlice = createSlice({
       return initialState;
     },
     updateEarning: (state: AuthState, {payload}) => {
-      console.log('payload----updateEarning', payload);
+      //console.log('payload----updateEarning', payload);
       state.currentEarning = state.currentEarning + payload;
       state.currentBalance = state.currentBalance + payload;
     },
     updateExpense: (state: AuthState, {payload}) => {
-      console.log('payload----updateExpense', payload);
+      //console.log('payload----updateExpense', payload);
       state.currentExpense = state.currentExpense + payload;
+      state.currentBalance = state.currentBalance - payload;
+    },
+    afterEditExpencesUpdate: (state: AuthState, {payload}) => {
+      //console.log('payload----updateExpense', payload);
+      state.currentExpense = state.currentExpense - payload;
+      state.currentBalance = state.currentBalance - payload;
+    },
+    afterDeletEarningUpadate: (state: AuthState, {payload}) => {
+      //console.log('payload----updateExpense', payload);
+      state.currentEarning = state.currentEarning - payload;
+      state.currentBalance = state.currentBalance - payload;
+    },
+    afterDeletExpenseUpadate: (state: AuthState, {payload}) => {
+      //console.log('payload----updateExpense', payload);
+      state.currentExpense = state.currentExpense - payload;
       state.currentBalance = state.currentBalance - payload;
     },
     logout: (state: AuthState) => {
@@ -63,7 +78,7 @@ export const AuthSlice = createSlice({
       signUp.fulfilled,
       (state: any, {payload}: {payload: any}) => {
         const {status, data} = payload;
-        console.log('Data', data);
+        //console.log('Data', data);
 
         if (status === 201 && data.success) {
           return {
@@ -82,11 +97,40 @@ export const AuthSlice = createSlice({
         }
       },
     );
+    builder.addCase(
+      getUserDetails.fulfilled,
+      (state: any, {payload}: {payload: any}) => {
+        const {status, data} = payload;
+
+        if (status === 200 && data.success) {
+          return {
+            ...state,
+            // token: data?.token,
+            verified: data?.verified,
+            userType: data?.user?.role,
+            userData: data?.user || null,
+            currentEarning: data?.user?.currentEarning,
+            currentExpense: data?.user?.currentExpense,
+            currentSavings: data?.user?.currentSavings,
+            currentBalance: data?.user?.currentBalance,
+          };
+        } else {
+          return initialState;
+        }
+      },
+    );
   },
 });
 
-export const {setInitialState, updateEarning, updateExpense, logout} =
-  AuthSlice.actions;
+export const {
+  setInitialState,
+  updateEarning,
+  updateExpense,
+  afterDeletExpenseUpadate,
+  afterDeletEarningUpadate,
+  afterEditExpencesUpdate,
+  logout,
+} = AuthSlice.actions;
 
-export {login, signUp};
+export {login, signUp, getUserDetails};
 export default AuthSlice.reducer;

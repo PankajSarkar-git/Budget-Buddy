@@ -3,8 +3,6 @@ import {
   Text,
   StyleSheet,
   Pressable,
-  Modal,
-  Platform,
   KeyboardAvoidingView,
   ScrollView,
 } from 'react-native';
@@ -12,21 +10,16 @@ import React, {useState} from 'react';
 import {colors} from '../../constant/colors';
 import Input from '../Input';
 import tw from 'twrnc';
-import DropDownPicker from 'react-native-dropdown-picker';
 import Icon from 'react-native-vector-icons/Feather';
 import {RootState} from '../../store';
 import Button from '../Button/Button';
-import {textStyle} from '../../constant/textStyle';
 import DatePickerModal from '../Calendar';
 import {useAppDispatch, useAppSelector} from '../../hooks/reduxHooks';
-import {addEarning} from '../../store/earning';
+import {addEarning, editEarning} from '../../store/earning';
 import {updateEarning} from '../../store/auth';
 import AutoCompleteInput from '../AutoCompleteInput/AutoCompleteInput';
-
-type DropdownItem = {
-  label: string;
-  value: string;
-};
+import {AllEarning, AllExpense, DropdownItem} from '../../utils/types';
+import {formatedDate} from '../../utils/time';
 
 type FormData = {
   amount: string;
@@ -34,42 +27,87 @@ type FormData = {
   source: string | null;
   date: Date;
 };
+interface EarningsTab {
+  onClose: () => void;
+  source?: string;
+  description?: string;
+  amount?: string;
+  date?: Date;
+  fromType?: 'Edit' | 'Add';
+  id?: string;
+  onSuccess?: (item: AllExpense | AllEarning) => void;
+}
 
-const EarningsTab = ({onClose}: {onClose: () => void}) => {
+const EarningsTab = ({
+  onClose,
+  fromType = 'Add',
+  amount,
+  date,
+  description,
+  source,
+  id = '',
+  onSuccess = () => {},
+}: EarningsTab) => {
   const isDarkMode = useAppSelector((state: RootState) => state.ui.isDarkMode);
 
   const [formData, setFormData] = useState<FormData>({
-    amount: '',
-    description: '',
-    source: null,
-    date: new Date(),
+    amount: amount ? amount.toString() : '',
+    description: description ? description : '',
+    source: source ? source : null,
+    date: date ? new Date(date) : new Date(),
   });
-
-  const [open, setOpen] = useState<boolean>(false);
-  const [formattedDisplayDate, setFormattedDisplayDate] =
-    useState<string>('Select Date');
+  const [formattedDisplayDate, setFormattedDisplayDate] = useState<string>(
+    date ? formatedDate(formData.date) : 'Select Date',
+  );
 
   const [errors, setErrors] = useState<{[key: string]: string}>({});
   const [showDatePicker, setShowDatePicker] = useState<boolean>(false);
   const dispatch = useAppDispatch();
 
   const handelAddEarningApiCall = async (data: any) => {
-    try {
-      const {payload}: any = await dispatch(addEarning(data));
-      console.log(payload, 'res');
-      if (payload?.data?.success) {
-        onClose();
-        setFormData({
-          amount: '',
-          description: '',
-          source: null,
-          date: new Date(),
-        });
-        const amount = payload?.data?.eraning?.amount;
-        await dispatch(updateEarning(amount));
+    if (fromType === 'Add') {
+      try {
+        const {payload}: any = await dispatch(addEarning(data));
+        //console.log(payload, 'res');
+        if (payload?.data?.success) {
+          onClose();
+          setFormData({
+            amount: '',
+            description: '',
+            source: null,
+            date: new Date(),
+          });
+          const amount = payload?.data?.eraning?.amount;
+          await dispatch(updateEarning(amount));
+        }
+      } catch (error) {
+        console.log(error, 'error');
       }
-    } catch (error) {
-      console.log(error, 'error');
+    } else if (fromType === 'Edit') {
+      try {
+        const {payload}: any = await dispatch(editEarning({data, id}));
+        if (payload?.data?.success) {
+          onClose();
+          setFormData({
+            amount: '',
+            description: '',
+            source: null,
+            date: new Date(),
+          });
+          const resAmount = payload?.data?.earning?.amount;
+          if (amount) {
+            if (resAmount < amount) {
+              await dispatch(updateEarning(Number(Number(amount) - resAmount)));
+            } else {
+              await dispatch(updateEarning(Number(resAmount - Number(amount))));
+            }
+          }
+          onSuccess(payload?.data?.earning as AllEarning);
+          // console.log('onSusccess');
+        }
+      } catch (error) {
+        console.log(error, 'error');
+      }
     }
   };
   const handleSave = () => {
@@ -99,12 +137,7 @@ const EarningsTab = ({onClose}: {onClose: () => void}) => {
     }
 
     setErrors({}); // Clear previous errors
-
     const formattedDate = formData.date.toISOString();
-    console.log('Earning Data:', {
-      ...formData,
-      date: formattedDate,
-    });
     handelAddEarningApiCall({
       ...formData,
       date: formattedDate,
@@ -152,7 +185,7 @@ const EarningsTab = ({onClose}: {onClose: () => void}) => {
               placeholder="Amount"
               height={12}
               type="number"
-              value={formData.amount}
+              value={formData?.amount}
               onChangeTextCustom={text =>
                 setFormData(prev => ({...prev, amount: text}))
               }
@@ -232,13 +265,7 @@ const EarningsTab = ({onClose}: {onClose: () => void}) => {
                 isDarkMode={isDarkMode}
                 onSelectDate={(date: Date) => {
                   setFormData(prev => ({...prev, date}));
-                  setFormattedDisplayDate(
-                    date.toLocaleDateString('en-GB', {
-                      day: '2-digit',
-                      month: 'short',
-                      year: 'numeric',
-                    }),
-                  );
+                  setFormattedDisplayDate(formatedDate(date));
                 }}
               />
             </View>

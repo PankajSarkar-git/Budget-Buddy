@@ -68,7 +68,7 @@ const Signup = () => {
     setLoading(true);
     try {
       const {payload}: any = await dispatch(signUp(userData));
-      console.log('payload', payload);
+      //console.log('payload', payload);
       if (payload?.data?.success) {
         navigation.replace('MainApp');
         setLoading(false);

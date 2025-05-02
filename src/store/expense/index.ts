@@ -1,7 +1,7 @@
 import {createSlice} from '@reduxjs/toolkit';
 import {
   addExpense,
-  allExpenseExpense,
+  allExpense,
   deleteExpense,
   editExpense,
   expenseStats,
@@ -33,10 +33,10 @@ export const ExpenseSlice = createSlice({
       },
     );
     builder.addCase(
-      allExpenseExpense.fulfilled,
+      allExpense.fulfilled,
       (state: any, {payload}: {payload: any}) => {
         const {status, data} = payload;
-        console.log('Data', data);
+        // console.log('Data', data);
 
         if (status === 200 && data.success) {
           return {
@@ -51,7 +51,7 @@ export const ExpenseSlice = createSlice({
       deleteExpense.fulfilled,
       (state: any, {payload}: {payload: any}) => {
         const {status, data} = payload;
-        console.log('Data', data);
+        // console.log('Data', data);
 
         if (status === 200 && data.success) {
           return {
@@ -66,7 +66,7 @@ export const ExpenseSlice = createSlice({
       editExpense.fulfilled,
       (state: any, {payload}: {payload: any}) => {
         const {status, data} = payload;
-        console.log('Data', data);
+        // console.log('Data', data);
 
         if (status === 200 && data.success) {
           return {
@@ -81,7 +81,7 @@ export const ExpenseSlice = createSlice({
       expenseStats.fulfilled,
       (state: any, {payload}: {payload: any}) => {
         const {status, data} = payload;
-        console.log('Data', data);
+        // console.log('Data', data);
 
         if (status === 200 && data.success) {
           return {
@@ -99,7 +99,7 @@ export const {setInitialState} = ExpenseSlice.actions;
 
 export {
   addExpense,
-  allExpenseExpense,
+  allExpense,
   editExpense,
   expenseStats,
   deleteExpense,

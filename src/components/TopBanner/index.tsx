@@ -17,8 +17,8 @@ const TopBanner = () => {
     currentBalance,
     userData,
   } = useSelector((state: RootState) => state.auth);
-  console.log(currentEarning);
-  console.log(userData);
+  // console.log(currentEarning);
+  // console.log(userData);
 
   return (
     <View style={tw`px-12 bg-[${colors.primary}]`}>

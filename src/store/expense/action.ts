@@ -13,8 +13,8 @@ export const addExpense = createAsyncThunk(
 
 export const editExpense = createAsyncThunk(
   `${expenseApiEndpoint.expense}Put`,
-  async (id: string, payload: any) => {
-    const {status, data} = await expenseApi.putEditExpense(id, payload);
+  async (payload: any) => {
+    const {status, data} = await expenseApi.putEditExpense(payload);
     return {status, data};
   },
 );
@@ -25,7 +25,7 @@ export const deleteExpense = createAsyncThunk(
     return {status, data};
   },
 );
-export const allExpenseExpense = createAsyncThunk(
+export const allExpense = createAsyncThunk(
   `${expenseApiEndpoint.expense}Get`,
   async (params: PageParams) => {
     const {status, data} = await expenseApi.getAllExpense(params);

@@ -1,5 +1,6 @@
 export const colors = {
   primary: '#613AAD',
+  textPrimary: '#4523A9',
   border: '#D9D9D9',
   notActiveTab: '#977EC7A8',
   white: '#FFFFFF',
