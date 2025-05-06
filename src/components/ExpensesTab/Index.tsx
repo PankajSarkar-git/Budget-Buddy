@@ -1,7 +1,6 @@
 import {
   View,
   Text,
-  StyleSheet,
   Pressable,
   KeyboardAvoidingView,
   ScrollView,
@@ -21,6 +20,13 @@ import {afterEditExpencesUpdate, updateExpense} from '../../store/auth';
 import AutoCompleteInput from '../AutoCompleteInput/AutoCompleteInput';
 import {AllEarning, AllExpense, DropdownItem} from '../../utils/types';
 import {formatedDate} from '../../utils/time';
+import {
+  capitalizeEachWord,
+  capitalizeFirstLetterOnly,
+  removeDotsAndZero,
+} from '../../utils/textFromate';
+import {categories} from '../../utils/staticData';
+import {Toast} from 'toastify-react-native';
 
 type FormData = {
   amount: string;
@@ -57,37 +63,17 @@ const ExpensesTab = ({
     category: category ? category : null,
     date: date ? new Date(date) : new Date(),
   });
+  const [loading, setLoading] = useState<boolean>(false);
 
   const [formattedDisplayDate, setFormattedDisplayDate] = useState<string>(
     date ? formatedDate(formData.date) : 'Select Date',
   );
 
-  const categories: DropdownItem[] = [
-    {label: 'Food', value: 'food'},
-    {label: 'Travel', value: 'travel'},
-    {label: 'Shopping', value: 'shopping'},
-    {label: 'Health', value: 'health'},
-    {label: 'Education', value: 'education'},
-    {label: 'Entertainment', value: 'entertainment'},
-    {label: 'Fitness', value: 'fitness'},
-    {label: 'Technology', value: 'technology'},
-    {label: 'Finance', value: 'finance'},
-    {label: 'Work', value: 'work'},
-    {label: 'Home', value: 'home'},
-    {label: 'Transport', value: 'transport'},
-    {label: 'Groceries', value: 'groceries'},
-    {label: 'Pets', value: 'pets'},
-    {label: 'Books', value: 'books'},
-    {label: 'Gifts', value: 'gifts'},
-    {label: 'Hobbies', value: 'hobbies'},
-    {label: 'Beauty', value: 'beauty'},
-    {label: 'Clothing', value: 'clothing'},
-    {label: 'Events', value: 'events'},
-  ];
   const [errors, setErrors] = useState<{[key: string]: string}>({});
   const [showDatePicker, setShowDatePicker] = useState<boolean>(false);
   const dispatch = useAppDispatch();
   const handelAddExpensesApiCall = async (data: any) => {
+    setLoading(true);
     if (fromType === 'Add') {
       try {
         const {payload}: any = await dispatch(addExpense(data));
@@ -102,9 +88,15 @@ const ExpensesTab = ({
           });
           const amount = payload?.data?.expense?.amount;
           await dispatch(updateExpense(amount));
+          Toast.success(payload?.data?.msg);
+        } else {
+          Toast.error(payload?.data?.msg || 'Please try again after sometimes');
         }
-      } catch (error) {
+      } catch (error: any) {
         console.log(error, 'error');
+        Toast.error('Please try again after sometimes');
+      } finally {
+        setLoading(false);
       }
     } else if (fromType === 'Edit') {
       try {
@@ -137,9 +129,15 @@ const ExpensesTab = ({
             }
           }
           onSuccess(payload?.data?.expense as AllExpense);
+          Toast.success(payload?.data?.msg);
+        } else {
+          Toast.error(payload?.data?.msg || 'Please try again after sometimes');
         }
-      } catch (error) {
+      } catch (error: any) {
         console.log(error, 'error');
+        Toast.error('Please try again after sometimes');
+      } finally {
+        setLoading(false);
       }
     }
   };
@@ -148,8 +146,10 @@ const ExpensesTab = ({
 
     if (!formData.amount.trim()) {
       newErrors.amount = 'Amount is required';
-    } else if (isNaN(Number(formData.amount))) {
-      newErrors.amount = 'Amount must be a number';
+    } else if (Number(formData.amount) <= 0) {
+      newErrors.amount = 'Amount must be greater than 0';
+    } else if ((formData.amount.match(/\./g) || []).length > 1) {
+      newErrors.amount = 'Amount cannot contain more than one decimal point';
     }
 
     if (!formData.description.trim()) {
@@ -193,7 +193,7 @@ const ExpensesTab = ({
           nestedScrollEnabled
           showsVerticalScrollIndicator={false}
           style={tw`h-[440px]`}>
-          <View style={tw`mt-9 gap-6 `}>
+          <View style={tw`mt-9 gap-6`}>
             <Input
               label="Amount"
               placeholder="Amount"
@@ -201,7 +201,10 @@ const ExpensesTab = ({
               type="number"
               value={formData.amount}
               onChangeTextCustom={text =>
-                setFormData(prev => ({...prev, amount: text}))
+                setFormData(prev => ({
+                  ...prev,
+                  amount: removeDotsAndZero(text),
+                }))
               }
               labelStyle={`mb-1 text-sm font-normal text-[${dynamicText}]`}
               error={errors.amount}
@@ -214,7 +217,10 @@ const ExpensesTab = ({
               numberOfLines={5}
               value={formData.description}
               onChangeTextCustom={text =>
-                setFormData(prev => ({...prev, description: text}))
+                setFormData(prev => ({
+                  ...prev,
+                  description: capitalizeFirstLetterOnly(text),
+                }))
               }
               labelStyle={`mb-1 text-sm font-normal text-[${dynamicText}]`}
               height={12}
@@ -227,7 +233,10 @@ const ExpensesTab = ({
                 label="Category"
                 value={formData.category ? formData.category : ''}
                 onChange={value =>
-                  setFormData(prev => ({...prev, category: value}))
+                  setFormData(prev => ({
+                    ...prev,
+                    category: capitalizeEachWord(value),
+                  }))
                 }
               />
               {errors.category && (
@@ -247,7 +256,7 @@ const ExpensesTab = ({
                   tw`flex-row items-center justify-between rounded-lg px-4 py-3 mb-6`,
                   {
                     borderWidth: 1,
-                    borderColor: isDarkMode ? '#fff' : borderColor,
+                    borderColor: isDarkMode ? colors.pencil : colors.grayLight,
                     backgroundColor: dynamicBackground,
                   },
                 ]}>
@@ -297,30 +306,12 @@ const ExpensesTab = ({
             title="Save"
             style="bg-[#613AAD] rounded-lg w-full py-3 mb-4"
             textStyle="text-white text-center font-medium text-xl"
+            loading={loading}
           />
         </View>
       </View>
     </KeyboardAvoidingView>
   );
 };
-
-const styles = StyleSheet.create({
-  dropdownContainer: {},
-  dropdownStyle: {
-    borderWidth: 1,
-    borderRadius: 8,
-  },
-  iconDropdownStyle: {
-    borderWidth: 1,
-    borderRadius: 8,
-  },
-  dropdownText: {
-    fontSize: 14,
-  },
-  labelStyle: {
-    fontWeight: '500',
-    fontSize: 14,
-  },
-});
 
 export default ExpensesTab;

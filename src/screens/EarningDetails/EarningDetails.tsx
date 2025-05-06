@@ -107,12 +107,8 @@ const EarningDetails = () => {
         }
         renderItem={({item}) => (
           <EarningItem
-            key={item.id}
-            source={item?.source}
-            description={item?.description}
-            amount={item.amount}
             type="Earning"
-            date={item.createdAt}
+            item={item}
             onDelete={() => handelDelete(item)}
             onEdit={() => handelEdit(item)}
           />

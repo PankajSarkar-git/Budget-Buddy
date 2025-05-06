@@ -30,7 +30,7 @@ export interface PageParams {
   sortOrder?: string;
   search?: string;
   filter?: string;
-  filterTime?:string;
+  filterTime?: string;
 }
 export type DropdownItem = {
   label: string;
@@ -61,7 +61,8 @@ export interface AllExpense extends EarningANdExpenseDetails {
   category?: string;
 }
 
-export interface ApiResponse<T, K extends string> { // useCase ApiResponse<User, 'user'>
+export interface ApiResponse<T, K extends string> {
+  // useCase ApiResponse<User, 'user'>
   status: number;
   data: {
     msg: string;
@@ -70,10 +71,6 @@ export interface ApiResponse<T, K extends string> { // useCase ApiResponse<User,
     [P in K]: T;
   };
 }
-
-
-
-
 
 export interface EditPayloadType {
   id: string;

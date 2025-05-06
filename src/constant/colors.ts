@@ -6,8 +6,8 @@ export const colors = {
   white: '#FFFFFF',
   black: '#000000',
   dark: '#000000',
-  'gray-light': '#D9D9D9',
-  'green-light': '#00A04D',
+  grayLight: '#D9D9D9',
+  greenLight: '#00A04D',
   pencil: '#686868',
   lightBorder: '#B5B5B585',
 };

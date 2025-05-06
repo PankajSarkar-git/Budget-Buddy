@@ -1,11 +1,11 @@
-import {Alert, View} from 'react-native';
+import {Alert, BackHandler, View} from 'react-native';
 import React, {useEffect} from 'react';
 import tw from 'twrnc';
 import TopBanner from '../../components/TopBanner';
 import BodyComponent from '../../components/Body';
 import {useAppDispatch} from '../../hooks/reduxHooks';
 import {getUserDetails} from '../../store/auth';
-import {useNavigation} from '@react-navigation/native';
+import {useFocusEffect, useNavigation} from '@react-navigation/native';
 
 const Home = () => {
   const dispatch = useAppDispatch();
@@ -16,14 +16,29 @@ const Home = () => {
       //console.log(payload, 'userDetails');
       if (!payload?.data?.success) {
         Alert.alert('Your session has expired. Please login!');
-        // navigation.replace('Login');
+        navigation.replace('Login');
       }
     } catch (error) {
       console.log(error);
       navigation.replace('Login');
     }
   };
+  useFocusEffect(
+    React.useCallback(() => {
+      const onBackPress = () => {
+        // Exit the app
+        BackHandler.exitApp();
+        return true;
+      };
 
+      const subscription = BackHandler.addEventListener(
+        'hardwareBackPress',
+        onBackPress,
+      );
+
+      return () => subscription.remove();
+    }, []),
+  );
   useEffect(() => {
     checkUserDetails();
   }, []);

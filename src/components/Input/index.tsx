@@ -55,7 +55,7 @@ const Input = ({
             tw`border  ${
               isDarkMode
                 ? `border-[${colors.pencil}]`
-                : `border-[${colors['gray-light']}]`
+                : `border-[${colors.grayLight}]`
             } rounded-lg  ${
               isDarkMode ? 'bg-black text-white' : 'bg-white text-gray-700'
             } py-2 w-full min-h-${height}`,

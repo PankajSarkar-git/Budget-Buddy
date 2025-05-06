@@ -1,7 +1,6 @@
 import {
   View,
   Text,
-  StyleSheet,
   Pressable,
   KeyboardAvoidingView,
   ScrollView,
@@ -20,6 +19,13 @@ import {updateEarning} from '../../store/auth';
 import AutoCompleteInput from '../AutoCompleteInput/AutoCompleteInput';
 import {AllEarning, AllExpense, DropdownItem} from '../../utils/types';
 import {formatedDate} from '../../utils/time';
+import {
+  capitalizeEachWord,
+  capitalizeFirstLetterOnly,
+  removeDotsAndZero,
+} from '../../utils/textFromate';
+import {EarningSource} from '../../utils/staticData';
+import {Toast} from 'toastify-react-native';
 
 type FormData = {
   amount: string;
@@ -59,12 +65,13 @@ const EarningsTab = ({
   const [formattedDisplayDate, setFormattedDisplayDate] = useState<string>(
     date ? formatedDate(formData.date) : 'Select Date',
   );
-
+  const [loading, setLoading] = useState<boolean>(false);
   const [errors, setErrors] = useState<{[key: string]: string}>({});
   const [showDatePicker, setShowDatePicker] = useState<boolean>(false);
   const dispatch = useAppDispatch();
 
   const handelAddEarningApiCall = async (data: any) => {
+    setLoading(true);
     if (fromType === 'Add') {
       try {
         const {payload}: any = await dispatch(addEarning(data));
@@ -79,9 +86,15 @@ const EarningsTab = ({
           });
           const amount = payload?.data?.eraning?.amount;
           await dispatch(updateEarning(amount));
+          Toast.success(payload?.data?.msg);
+        } else {
+          Toast.error(payload?.data?.msg || 'Please try again after sometimes');
         }
-      } catch (error) {
+      } catch (error: any) {
         console.log(error, 'error');
+        Toast.error('Please try again after sometimes');
+      } finally {
+        setLoading(false);
       }
     } else if (fromType === 'Edit') {
       try {
@@ -103,10 +116,15 @@ const EarningsTab = ({
             }
           }
           onSuccess(payload?.data?.earning as AllEarning);
-          // console.log('onSusccess');
+          Toast.success(payload?.data?.msg);
+        } else {
+          Toast.error(payload?.data?.msg || 'Please try again after sometimes');
         }
-      } catch (error) {
+      } catch (error: any) {
         console.log(error, 'error');
+        Toast.error('Please try again after sometimes');
+      } finally {
+        setLoading(false);
       }
     }
   };
@@ -115,8 +133,10 @@ const EarningsTab = ({
 
     if (!formData.amount.trim()) {
       newErrors.amount = 'Amount is required';
-    } else if (isNaN(Number(formData.amount))) {
-      newErrors.amount = 'Amount must be a number';
+    } else if (Number(formData.amount) <= 0) {
+      newErrors.amount = 'Amount must be greater than 0';
+    } else if ((formData.amount.match(/\./g) || []).length > 1) {
+      newErrors.amount = 'Amount cannot contain more than one decimal point';
     }
 
     if (!formData.description.trim()) {
@@ -144,30 +164,7 @@ const EarningsTab = ({
     });
   };
 
-  const earningsCategories: DropdownItem[] = [
-    {label: 'Salary', value: 'salary'},
-    {label: 'Freelancing', value: 'freelancing'},
-    {label: 'Investments', value: 'investments'},
-    {label: 'Rental Income', value: 'rental_income'},
-    {label: 'Dividends', value: 'dividends'},
-    {label: 'Interest', value: 'interest'},
-    {label: 'Business', value: 'business'},
-    {label: 'Bonus', value: 'bonus'},
-    {label: 'Consulting', value: 'consulting'},
-    {label: 'Royalties', value: 'royalties'},
-    {label: 'Grants', value: 'grants'},
-    {label: 'Pension', value: 'pension'},
-    {label: 'Social Security', value: 'social_security'},
-    {label: 'Affiliate Income', value: 'affiliate_income'},
-    {label: 'Online Sales', value: 'online_sales'},
-    {label: 'Part-time Job', value: 'part_time_job'},
-    {label: 'Crowdfunding', value: 'crowdfunding'},
-    {label: 'Scholarships', value: 'scholarships'},
-    {label: 'Cashback', value: 'cashback'},
-    {label: 'Other Income', value: 'other_income'},
-  ];
-
-  const categoryLabels = earningsCategories.map(c => c.label);
+  const categoryLabels = EarningSource.map(c => c.label);
   const dynamicText = isDarkMode ? colors.white : '#1e293b';
   const dynamicBackground = isDarkMode ? colors.dark : colors.white;
   const borderColor = isDarkMode ? '#444' : colors.border;
@@ -187,7 +184,10 @@ const EarningsTab = ({
               type="number"
               value={formData?.amount}
               onChangeTextCustom={text =>
-                setFormData(prev => ({...prev, amount: text}))
+                setFormData(prev => ({
+                  ...prev,
+                  amount: removeDotsAndZero(text),
+                }))
               }
               labelStyle={`mb-1 text-sm font-normal text-[${dynamicText}]`}
               error={errors.amount}
@@ -200,7 +200,10 @@ const EarningsTab = ({
               numberOfLines={5}
               value={formData.description}
               onChangeTextCustom={text =>
-                setFormData(prev => ({...prev, description: text}))
+                setFormData(prev => ({
+                  ...prev,
+                  description: capitalizeFirstLetterOnly(text),
+                }))
               }
               labelStyle={`mb-1 text-sm font-normal text-[${dynamicText}]`}
               height={12}
@@ -213,7 +216,10 @@ const EarningsTab = ({
                 label="Source"
                 value={formData.source ? formData.source : ''}
                 onChange={value =>
-                  setFormData(prev => ({...prev, source: value}))
+                  setFormData(prev => ({
+                    ...prev,
+                    source: capitalizeEachWord(value),
+                  }))
                 }
               />
               {errors.source && (
@@ -277,30 +283,12 @@ const EarningsTab = ({
             title="Save"
             style="bg-[#613AAD] rounded-lg w-full py-3 mb-4"
             textStyle="text-white text-center font-medium text-xl"
+            loading={loading}
           />
         </View>
       </View>
     </KeyboardAvoidingView>
   );
 };
-
-const styles = StyleSheet.create({
-  dropdownContainer: {},
-  dropdownStyle: {
-    borderWidth: 1,
-    borderRadius: 8,
-  },
-  iconDropdownStyle: {
-    borderWidth: 1,
-    borderRadius: 8,
-  },
-  dropdownText: {
-    fontSize: 14,
-  },
-  labelStyle: {
-    fontWeight: '500',
-    fontSize: 14,
-  },
-});
 
 export default EarningsTab;

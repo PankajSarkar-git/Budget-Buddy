@@ -29,7 +29,7 @@ const menuData:MenuItem[] = [
     id: '3',
     title: 'Savings',
     icon: 'dollar-sign',
-    color: 'yellow',
+    color: '#FFD700',
     path: 'Savings',
   },
   {id: '4', title: 'Bills', icon: 'credit-card', color: 'blue'},

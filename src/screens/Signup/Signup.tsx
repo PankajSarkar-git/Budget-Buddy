@@ -7,10 +7,10 @@ import {colors} from '../../constant/colors';
 import Input from '../../components/Input';
 import Icon from 'react-native-vector-icons/Feather';
 import Button from '../../components/Button/Button';
-import Icon2 from 'react-native-vector-icons/AntDesign';
 import {useAppDispatch} from '../../hooks/reduxHooks';
 import {signUp} from '../../store/auth';
 import {textStyle} from '../../constant/textStyle';
+import {Toast} from 'toastify-react-native';
 
 type UserData = {
   name: string;
@@ -71,12 +71,16 @@ const Signup = () => {
       //console.log('payload', payload);
       if (payload?.data?.success) {
         navigation.replace('MainApp');
+
         setLoading(false);
+        Toast.success(payload?.data?.msg);
       } else {
         setLoading(false);
+        Toast.error(payload?.data?.msg || 'Please try again after sometimes');
       }
     } catch (error) {
       console.log(error);
+      Toast.error('Please try again after sometimes');
       setLoading(false);
     }
   };
@@ -99,11 +103,11 @@ const Signup = () => {
         <View style={tw`flex items-center`}>
           {/* <View style={tw`h-16 w-16 mt-20`}></View> */}
           <Text style={[tw`text-white mr-10`, textStyle.fsrobo_36_600]}>
-            Expense
+            Budget
           </Text>
           <Text
             style={[tw`text-4xl text-white ml-10`, textStyle.fsrobo_36_600]}>
-            Tracker
+            Buddy
           </Text>
         </View>
         <Input

@@ -1,4 +1,4 @@
-// navigation/BottomTabs.tsx
+
 import React from 'react';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import Home from '../screens/Home/Home';
@@ -17,6 +17,7 @@ import Earnings from '../screens/Earnings/Earnings';
 import TopHeader from '../components/Header/TopHeader';
 import EarningDetails from '../screens/EarningDetails/EarningDetails';
 import ExpensesDetails from '../screens/ExpensesDetails/ExpensesDetails';
+import ItemDetails from '../screens/ItemDetails/ItemDetails';
 
 const Stack = createNativeStackNavigator();
 
@@ -69,6 +70,9 @@ const AppRoute = () => {
       </Stack.Screen>
       <Stack.Screen name="Expenses Details">
         {() => <ScreenWithBottomNav Component={ExpensesDetails} />}
+      </Stack.Screen>
+      <Stack.Screen name="Item Details">
+        {() => <ScreenWithBottomNav Component={ItemDetails} />}
       </Stack.Screen>
     </Stack.Navigator>
   );

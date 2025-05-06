@@ -6,13 +6,15 @@ import {Provider} from 'react-redux';
 import {PersistGate} from 'redux-persist/integration/react';
 import store, {persistor} from './src/store';
 import {injectStore} from './src/apis/createApiInstance';
+import MainApp from './src/MainApp';
 injectStore(store);
+
 const App = () => {
   return (
     <Provider store={store}>
       <PersistGate persistor={persistor}>
         <SafeAreaView style={tw`flex flex-1`}>
-          <MainRoute />
+          <MainApp />
         </SafeAreaView>
       </PersistGate>
     </Provider>

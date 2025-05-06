@@ -1,27 +1,4 @@
-// import React from 'react';
-// import {NavigationContainer} from '@react-navigation/native';
-// import {createNativeStackNavigator} from '@react-navigation/native-stack';
-// import Login from '../screens/LogIn/Login';
-// import Signup from '../screens/Signup/Signup';
-// import AppRoute from './AppRoute';
 
-// const Stack = createNativeStackNavigator();
-
-// const MainRoute = () => {
-//   return (
-//     <NavigationContainer>
-//       <Stack.Navigator
-//         initialRouteName="Login"
-//         screenOptions={{headerShown: false}}>
-//         <Stack.Screen name="Login" component={Login} />
-//         <Stack.Screen name="Signup" component={Signup} />
-//         <Stack.Screen name="MainApp" component={AppRoute} />
-//       </Stack.Navigator>
-//     </NavigationContainer>
-//   );
-// };
-
-// export default MainRoute;
 
 import React, {useEffect, useState} from 'react';
 import {NavigationContainer} from '@react-navigation/native';

@@ -8,6 +8,7 @@ import {useNavigation} from '@react-navigation/native';
 import {colors} from '../../../constant/colors';
 import {useAppDispatch, useAppSelector} from '../../../hooks/reduxHooks';
 import {logout} from '../../../store/auth';
+import {Toast} from 'toastify-react-native';
 
 function TopNavbar() {
   const {isDarkMode} = useAppSelector((state: RootState) => state.ui);
@@ -21,6 +22,7 @@ function TopNavbar() {
   const logOut = () => {
     dispatch(logout());
     navigation.navigate('Login');
+    Toast.success('Log out successfully');
   };
   return (
     <View
@@ -46,8 +48,9 @@ function TopNavbar() {
           />
         </TouchableOpacity>
         <TouchableOpacity onPress={logOut}>
-          <Icon name="bell" size={20} color="white" />
-        </TouchableOpacity>   
+          {/* <Icon name="bell" size={20} color="white" /> */}
+          <Icon name="sign-out" size={20} color="white" />
+        </TouchableOpacity>
       </View>
     </View>
   );

@@ -2,9 +2,7 @@ import {View, Pressable} from 'react-native';
 import React, {useState} from 'react';
 import tw from 'twrnc';
 import Icon from 'react-native-vector-icons/Feather';
-import Icon2 from 'react-native-vector-icons/FontAwesome6';
 import Icon3 from 'react-native-vector-icons/MaterialIcons';
-import BootomNavbarTopBorderSvg from '../../../assets/svgs/BootomNavbarTopBorderSvg';
 import {useSelector} from 'react-redux';
 import {RootState} from '../../../store';
 import {colors} from '../../../constant/colors';
@@ -20,14 +18,17 @@ const BottomNavbar = () => {
     <View style={tw`${isDarkMode ? '' : ''}`}>
       <SvgBackground
         bgColor={isDarkMode ? 'black' : 'white'}
-        strokeColor={isDarkMode ? colors.pencil : colors['gray-light']}
+        strokeColor={isDarkMode ? colors.pencil : colors.grayLight}
       />
       {/* <View style={tw`w-full`}>
         <BootomNavbarTopBorderSvg />
       </View> */}
       <View style={tw`px-7 py-2 flex-row justify-between mb-3`}>
         <View style={tw`flex-row gap-14 `}>
-          <Pressable onPress={() => navigatton.navigate('Home')}>
+          <Pressable
+            onPress={() =>
+              navigatton.navigate('Home')
+            }>
             <Icon
               name="home"
               size={24}
@@ -53,8 +54,8 @@ const BottomNavbar = () => {
         </Pressable>
         <View style={tw`flex-row gap-14 `}>
           <Pressable onPress={() => navigatton.navigate('Transaction')}>
-            <Icon2
-              name="clock-rotate-left"
+            <Icon3
+              name="history"
               size={24}
               color={route.name === 'Transaction' ? 'blue' : '#969696'}
             />

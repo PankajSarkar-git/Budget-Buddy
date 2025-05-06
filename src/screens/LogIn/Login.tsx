@@ -10,6 +10,7 @@ import Button from '../../components/Button/Button';
 import {textStyle} from '../../constant/textStyle';
 import {login} from '../../store/auth';
 import {useAppDispatch} from '../../hooks/reduxHooks';
+import {Toast} from 'toastify-react-native';
 
 type UserData = {
   email: string;
@@ -54,16 +55,18 @@ const Login = () => {
     setLoading(true);
     try {
       const {payload}: any = await dispatch(login(userData));
-      //console.log('payload', payload);
+      console.log('payload', payload);
       if (payload?.data?.success) {
         setError('');
+        Toast.success(payload?.data?.msg);
         navigation.replace('MainApp');
       } else {
-        setError('Login failed. Please try again.');
+        Toast.error(payload?.data?.msg || 'Please try again after sometimes');
         setLoading(false);
       }
     } catch (error) {
-      console.log(error);
+      console.log(error, 'LogIn error');
+      Toast.error('Please try again after sometimes');
       setLoading(false);
     }
   };
@@ -86,11 +89,11 @@ const Login = () => {
         <View style={tw`flex items-center`}>
           {/* <View style={tw`h-16 w-16 mt-20`}></View> */}
           <Text style={[tw`text-white mr-10`, textStyle.fsrobo_36_600]}>
-            Expense
+            Budget
           </Text>
           <Text
             style={[tw`text-4xl text-white ml-10`, textStyle.fsrobo_36_600]}>
-            Tracker
+            Buddy
           </Text>
         </View>
         <Input

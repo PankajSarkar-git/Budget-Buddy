@@ -14,7 +14,7 @@ const BodyComponent = () => {
 
   // Data for FlatList (no need for conditionals, just list components directly)
   const data = [
-    {id: '1', component: <UpCommingBillsContainer />},
+    // {id: '1', component: <UpCommingBillsContainer />},
     {id: '2', component: <MenuGrid />},
   ];
 
@@ -24,7 +24,7 @@ const BodyComponent = () => {
         isDarkMode ? 'bg-black' : 'bg-white'
       }`}>
       <View style={tw`flex justify-center items-center py-3`}>
-        <View style={tw`w-1/3 h-1 bg-[${colors['gray-light']}] rounded-full`} />
+        <View style={tw`w-1/3 h-1 bg-[${colors.grayLight}] rounded-full`} />
       </View>
 
       <FlatList

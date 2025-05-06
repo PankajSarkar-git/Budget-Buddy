@@ -1,7 +1,6 @@
 import {View, Text, ScrollView, Pressable} from 'react-native';
 import React, { useState } from 'react';
 import tw from 'twrnc';
-import ModalComponent from '../../components/ModalComponent';
 import AddDataModal from '../../components/AddDataModal';
 
 const Profile  = () => {

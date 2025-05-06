@@ -1,6 +1,6 @@
-import axios from "axios";
+import axios from 'axios';
 
-import { noTokenEndPoint, multipartHeaderEndPoint } from "./checkingEndPoint";
+import {noTokenEndPoint, multipartHeaderEndPoint} from './checkingEndPoint';
 // import store from "../store";
 let store: any;
 
@@ -17,25 +17,27 @@ const handleRequest = (config: any) => {
     return {
       ...config,
       headers: {
-        ...config.headers
-      }
+        ...config.headers,
+      },
     };
   } else {
     return {
       ...config,
       headers: {
         ...config.headers,
-        Authorization: `Bearer ${accessToken}`
-      }
+        Authorization: `Bearer ${accessToken}`,
+      },
     };
   }
 };
 
-const createApiInstance = (baseURL: string, name = "") => {
-  const api = axios.create({ baseURL, timeout: defaultTimeout });
+const createApiInstance = (baseURL: string, name = '') => {
+  const api = axios.create({baseURL, timeout: defaultTimeout});
 
   if (!baseURL) {
-    throw new Error(`${name} baseURL not set during built. Please, set baseURL`);
+    throw new Error(
+      `${name} baseURL not set during built. Please, set baseURL`,
+    );
   }
 
   api.interceptors.request.use(handleRequest);
@@ -45,12 +47,12 @@ const createApiInstance = (baseURL: string, name = "") => {
       return response;
     },
     error => {
-      return error;
-    }
+      return Promise.reject(error);
+    },
   );
 
   return {
-    instance: api
+    instance: api,
   };
 };
 

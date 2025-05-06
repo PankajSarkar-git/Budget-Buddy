@@ -10,6 +10,7 @@ import {
   afterDeletExpenseUpadate,
 } from '../../store/auth';
 import {deleteExpense} from '../../store/expense';
+import {Toast} from 'toastify-react-native';
 
 interface AddModalType {
   visible: boolean;
@@ -40,9 +41,13 @@ const DeleteModal = ({
             const amount = payload?.data?.earning?.amount;
             await dispatch(afterDeletEarningUpadate(Number(amount)));
             onSuccess(data);
+            Toast.success(payload?.data?.msg);
+          } else {
+            Toast.error(payload?.data?.msg);
           }
-        } catch (error) {
+        } catch (error: any) {
           console.log(error);
+          Toast.error('Please try again after sometimes');
         }
       } else {
         try {
@@ -53,9 +58,15 @@ const DeleteModal = ({
             const amount = payload?.data?.expense?.amount;
             await dispatch(afterDeletExpenseUpadate(Number(amount)));
             onSuccess(data);
+            Toast.success(payload?.data?.msg);
+          } else {
+            Toast.error(
+              payload?.data?.msg || 'Please try again after sometimes',
+            );
           }
-        } catch (error) {
+        } catch (error: any) {
           console.log(error);
+          Toast.error('Please try again after sometimes');
         }
       }
     }
@@ -65,19 +76,33 @@ const DeleteModal = ({
     <View>
       <ModalComponent visible={visible} onClose={onClose} title={title}>
         <View style={tw`p-4`}>
-          <Text style={tw`text-lg font-semibold text-center mb-4`}>
-            Are you sure you want to delete this item?
+          <Text
+            style={tw`text-lg font-semibold text-center mb-4 ${
+              isDarkMode ? 'text-white' : 'text-black'
+            }`}>
+            Are you sure you want to delete this{' '}
+            ₹ {new Intl.NumberFormat('en-IN').format(Number(data?.amount))}{' '}
+            {isEarning ? 'earning' : 'expense'} transaction?
           </Text>
           <View style={tw`flex-row justify-between mt-4`}>
             <TouchableOpacity
               onPress={handleDelete}
-              style={tw`bg-red-500 px-4 py-2 rounded w-[48%]`}>
+              style={tw`${
+                isDarkMode ? 'bg-red-600' : 'bg-red-500'
+              } px-4 py-3 rounded w-[48%]`}>
               <Text style={tw`text-white text-center font-medium`}>Yes</Text>
             </TouchableOpacity>
             <TouchableOpacity
               onPress={onClose}
-              style={tw`bg-gray-300 px-4 py-2 rounded w-[48%]`}>
-              <Text style={tw`text-black text-center font-medium`}>No</Text>
+              style={tw`${
+                isDarkMode ? 'bg-gray-700' : 'bg-gray-300'
+              } px-4 py-3 rounded w-[48%]`}>
+              <Text
+                style={tw`${
+                  isDarkMode ? 'text-white' : 'text-black'
+                } text-center font-medium`}>
+                No
+              </Text>
             </TouchableOpacity>
           </View>
         </View>
